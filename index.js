@@ -1,10 +1,10 @@
 // to play 1 second we need array of 44100 numbers
-const sampleRate = document.getElementById("array1");
+const sampleRate = 44100; //document.getElementById("array1");
 
 // create a typed array of size 44100 float numbers
 const sineWaveArray = new Float32Array(sampleRate);
 
-const hz = document.getElementById("hz1");
+const hz = 4410; //document.getElementById("hz1");
 
 // fill all 44100 elements of array with Math.sin() values
 for (i = 0; i < sineWaveArray.length; i++) {
