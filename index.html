@@ -1,9 +1,10 @@
   
 <html>
-	<input type="float" placeholder="44100" id="hz1">
-	<input type="float" placeholder="440" id="sr1">
+	Frequency: <input type="float" placeholder="44100"  id="hz1">
+	<br> Length: <input type="float" placeholder="440"  id="sr1">
 	<button type="button" onclick="getSounds();">Get Sounds</button>
   <button onclick="playSineWave440hz()">Play sine wave 440 hz frequency</button>
+  
   
   
   <script>
@@ -54,6 +55,13 @@ function playSound({ array, sampleRate }) {
 }
 
 function playSineWave440hz() {
+	var hz = document.getElementById("hz1").value;
+	var sampleRate = document.getElementById("sr1").value;
+	const sineWaveArray = new Float32Array(sampleRate);
+	for (i = 0; i < sineWaveArray.length; i++) {
+  sineWaveArray[i] = Math.sin(i * Math.PI * 8 / hz);
+}
+
   playSound({ array: sineWaveArray, sampleRate });
 }
   </script>
