@@ -1,9 +1,19 @@
 
+
 <html>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-	Frequency (Hz): <input type="float"  value="440" id="hz1">
-	<br> Length (s): <input type="float" value="2"  id="sr1">
+	Frequency (Hz): <input type="float"  value="300" id="hz1" size="3">
+	<input type="float"  value="400" id="hz2" size="3">
+	<input type="float"  value="300" id="hz3" size="3">
+	<input type="float"  value="200" id="hz4" size="3">
+	<input type="float"  value="240" id="hz5" size="3">
+	<input type="float"  value="300" id="hz6" size="3">
+	<input type="float"  value="360" id="hz7" size="3">
+	<input type="float"  value="300" id="hz8" size="3">
+	<input type="float"  value="360" id="hz9" size="3">
+	<input type="float"  value="300" id="hz10" size="3">
+	<br> Length (s): <input type="float" value=".5"  id="sr1">
 	
 	
   <button onclick="playSineWave()">Wave</button>
@@ -13,11 +23,9 @@
   <script>
 	
 const sampleRate = 44100;
-const xValues = [];
-const yValues = [];
+var xValues = [];
+var yValues = [];
 
-//const xValues = [0,.01,.02,.03];
-//const yValues = [-1,1,-1,1];
 
 
 function playSound({ array, sampleRate }) {
@@ -35,22 +43,45 @@ function playSound({ array, sampleRate }) {
 }
 
 
-
 function playSineWave() {
 	
 	//get frequency from html
-	var hz = document.getElementById("hz1").value;
+	var hzs = [];
+	hzs[0] = document.getElementById("hz1").value;
+	hzs[1] = document.getElementById("hz2").value;
+	hzs[2] = document.getElementById("hz3").value;
+	hzs[3] = document.getElementById("hz4").value;
+	hzs[4] = document.getElementById("hz5").value;
+	hzs[5] = document.getElementById("hz6").value;
+	hzs[6] = document.getElementById("hz7").value;
+	hzs[7] = document.getElementById("hz8").value;
+	hzs[8] = document.getElementById("hz9").value;
+	hzs[9] = document.getElementById("hz10").value;
 	
 	//make array for sine wave, use html for length
 	var sinewavelength = document.getElementById("sr1").value;
-	const sineWaveArray = new Float32Array(sampleRate * sinewavelength);
+	const sineWaveArray = new Float32Array(sampleRate * sinewavelength * hzs.length);
 	
-	for (i = 0; i < sineWaveArray.length; i++) {
-  		
+	wavexValues = [];
+	waveyValues = [];
+	linexValues = [];
+	lineyValues = [];
+	
+	
+	for (i = 0; i < hzs.length; i++){
+	linexValues.push(i);
+	lineyValues.push(hzs[i]);
+	}
+	
+	
+	for (i = 0; i < sineWaveArray.length; i++){
+		j = Math.floor(i/(sampleRate * sinewavelength));
+	
 		//populate array for buffer			
-		sineWaveArray[i] = Math.sin(i * hz / sinewavelength);
+		sineWaveArray[i] = Math.sin(i * hzs[j] * 2 * Math.PI / sampleRate);
 		
 		//populate values for graph
+		
 		if (i < sampleRate/100){
 		xValues.push(i);
 		yValues.push(sineWaveArray[i]);
@@ -61,16 +92,16 @@ function playSineWave() {
 new Chart("myChart", {
   type: "line",
   data: {
-  labels: xValues,
+  labels: linexValues,
     datasets: [{
-      data: yValues
+      data: lineyValues
     }]
   },
   options: {
     legend: {display: false},
     scales: {
-      xAxes: [{ticks: {min: 0, max:0.1}}],
-      yAxes: [{ticks: {min: -1.5, max:1.5}}],
+      xAxes: [],
+      yAxes: [],
     }
   }
 });
@@ -84,3 +115,4 @@ new Chart("myChart", {
 
 
 </html>
+
