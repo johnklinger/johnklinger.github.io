@@ -1,7 +1,8 @@
 <html>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-	Frequency (Hz): <input type="float"  value="300" id="hz1" size="3">
+	Frequency (Hz): 
+	<input type="float"  value="300" id="hz1" size="3">
 	<input type="float"  value="400" id="hz2" size="3">
 	<input type="float"  value="300" id="hz3" size="3">
 	<input type="float"  value="200" id="hz4" size="3">
@@ -11,9 +12,16 @@
 	<input type="float"  value="300" id="hz8" size="3">
 	<input type="float"  value="360" id="hz9" size="3">
 	<input type="float"  value="300" id="hz10" size="3">
+	<input type="float"  value="360" id="hz11" size="3">
+	<input type="float"  value="400" id="hz12" size="3">
+	<input type="float"  value="300" id="hz13" size="3">
+	<input type="float"  value="200" id="hz14" size="3">
+	<input type="float"  value="240" id="hz15" size="3">
+	<input type="float"  value="300" id="hz16" size="3">
 	<br> Length (s): <input type="float" value=".5"  id="sr1">
 	<br><br>
-		Frequency (Hz): <input type="float"  value="200" id="2hz1" size="3">
+		Frequency (Hz): 
+	<input type="float"  value="200" id="2hz1" size="3">
 	<input type="float"  value="200" id="2hz2" size="3">
 	<input type="float"  value="200" id="2hz3" size="3">
 	<input type="float"  value="240" id="2hz4" size="3">
@@ -23,10 +31,35 @@
 	<input type="float"  value="300" id="2hz8" size="3">
 	<input type="float"  value="180" id="2hz9" size="3">
 	<input type="float"  value="180" id="2hz10" size="3">
+	<input type="float"  value="200" id="2hz11" size="3">
+	<input type="float"  value="200" id="2hz12" size="3">
+	<input type="float"  value="180" id="2hz13" size="3">
+	<input type="float"  value="200" id="2hz14" size="3">
+	<input type="float"  value="240" id="2hz15" size="3">
+	<input type="float"  value="150" id="2hz16" size="3">
 	<br> Length (s): <input type="float" value=".5"  id="2sr1">
+	<br><br>
+		Frequency (Hz): 
+	<input type="float"  value="150" id="3hz1" size="3">
+	<input type="float"  value="200" id="3hz2" size="3">
+	<input type="float"  value="150" id="3hz3" size="3">
+	<input type="float"  value="120" id="3hz4" size="3">
+	<input type="float"  value="100" id="3hz5" size="3">
+	<input type="float"  value="120" id="3hz6" size="3">
+	<input type="float"  value="150" id="3hz7" size="3">
+	<input type="float"  value="180" id="3hz8" size="3">
+	<input type="float"  value="90" id="3hz9" size="3">
+	<input type="float"  value="90" id="3hz10" size="3">
+	<input type="float"  value="180" id="3hz11" size="3">
+	<input type="float"  value="300" id="3hz12" size="3">
+	<input type="float"  value="240" id="3hz13" size="3">
+	<input type="float"  value="100" id="3hz14" size="3">
+	<input type="float"  value="120" id="3hz15" size="3">
+	<input type="float"  value="225" id="3hz16" size="3">
+	<br> Length (s): <input type="float" value=".5"  id="3sr1">
 	
 	
-  <button onclick="playSineWave()">Wave</button>
+  <br><button onclick="playSineWave()">Wave</button>
   <br><canvas id="myChart" style="width:100%;max-width:700px"></canvas>
   
   
@@ -54,7 +87,14 @@ function playSineWave() {
 	document.getElementById("hz7").value,
 	document.getElementById("hz8").value,
 	document.getElementById("hz9").value,
-	document.getElementById("hz10").value],
+	document.getElementById("hz10").value,
+	document.getElementById("hz11").value,
+	document.getElementById("hz12").value,
+	document.getElementById("hz13").value,
+	document.getElementById("hz14").value,
+	document.getElementById("hz15").value,
+	document.getElementById("hz16").value],
+
 	[document.getElementById("2hz1").value,
 	document.getElementById("2hz2").value,
 	document.getElementById("2hz3").value,
@@ -64,12 +104,36 @@ function playSineWave() {
 	document.getElementById("2hz7").value,
 	document.getElementById("2hz8").value,
 	document.getElementById("2hz9").value,
-	document.getElementById("2hz10").value]
+	document.getElementById("2hz10").value,
+	document.getElementById("2hz11").value,
+	document.getElementById("2hz12").value,
+	document.getElementById("2hz13").value,
+	document.getElementById("2hz14").value,
+	document.getElementById("2hz15").value,
+	document.getElementById("2hz16").value],
+
+	[document.getElementById("3hz1").value,
+	document.getElementById("3hz2").value,
+	document.getElementById("3hz3").value,
+	document.getElementById("3hz4").value,
+	document.getElementById("3hz5").value,
+	document.getElementById("3hz6").value,
+	document.getElementById("3hz7").value,
+	document.getElementById("3hz8").value,
+	document.getElementById("3hz9").value,
+	document.getElementById("3hz10").value,
+	document.getElementById("3hz11").value,
+	document.getElementById("3hz12").value,
+	document.getElementById("3hz13").value,
+	document.getElementById("3hz14").value,
+	document.getElementById("3hz15").value,
+	document.getElementById("3hz16").value]
 	];
 	
 	var srs = [
 	document.getElementById("sr1").value,
-	document.getElementById("2sr1").value
+	document.getElementById("2sr1").value,
+	document.getElementById("3sr1").value	
 	];
 	
 	
@@ -84,7 +148,7 @@ function playSineWave() {
 	
 	//make array for sine wave, use html for length
 	var sinearrays = [];
-	for (i=0; i < hzs.length; i++){
+	for (i=0; i < hzs.length + 1; i++){
 		sinearrays[i] = new Float32Array(sampleRate * srs[longtone] * hzs[0].length);
 	}
 	
@@ -102,6 +166,8 @@ function playSineWave() {
 			linexValues[k].push(i*srs[k]);
 			lineyValues[k].push(hzs[k][i]);
 		}
+		linexValues[k].push((i)*srs[k]);
+		lineyValues[k].push(hzs[k][i-1]);
 	}
 	
 	
@@ -110,9 +176,12 @@ function playSineWave() {
 			j = Math.floor(i/(sampleRate * srs[k]));
 	
 			//populate array for buffer			
-			sinearrays[k][i] = Math.sin(i * hzs[k][j] * 2 * Math.PI / sampleRate);
-		
-			
+			sinearrays[k][i] = Math.sin(i * hzs[k][j] * 2 * Math.PI / sampleRate);		
+		}
+	}
+	for (i = 0; i <sinearrays[k].length; i++){
+		for (j = 0; j < hzs.length; j++){
+			sinearrays[k][i] += sinearrays[j][i];
 		}
 	}
 
@@ -122,24 +191,27 @@ new Chart("myChart", {
 	labels: linexValues[0],
     datasets: [
 		{
-		data: lineyValues[0]
+		data: lineyValues[0],
+		steppedLine: 'before',
 		},
 		{
-		data: lineyValues[1]
-		}]
+		data: lineyValues[1],
+		steppedLine: 'before',
+		},
+		{
+		data: lineyValues[2],
+		steppedLine: 'before',
+		},]
   },
   options: {
     legend: {display: false},
-    scales: {
-      xAxes: [],
-      yAxes: [],
-    }
   }
 });
-for (i = 0; i < sinearrays.length; i++){
-  playSound({ array: sinearrays[i], sampleRate });
- }
-  
+
+
+
+playSound({ array: sinearrays[k], sampleRate }); 
+ 
 }
 
 function playSound({ array, sampleRate }) {
