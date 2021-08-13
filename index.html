@@ -1,5 +1,3 @@
-
-
 <html>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
@@ -14,6 +12,18 @@
 	<input type="float"  value="360" id="hz9" size="3">
 	<input type="float"  value="300" id="hz10" size="3">
 	<br> Length (s): <input type="float" value=".5"  id="sr1">
+	<br><br>
+		Frequency (Hz): <input type="float"  value="200" id="2hz1" size="3">
+	<input type="float"  value="200" id="2hz2" size="3">
+	<input type="float"  value="200" id="2hz3" size="3">
+	<input type="float"  value="240" id="2hz4" size="3">
+	<input type="float"  value="240" id="2hz5" size="3">
+	<input type="float"  value="240" id="2hz6" size="3">
+	<input type="float"  value="300" id="2hz7" size="3">
+	<input type="float"  value="300" id="2hz8" size="3">
+	<input type="float"  value="180" id="2hz9" size="3">
+	<input type="float"  value="180" id="2hz10" size="3">
+	<br> Length (s): <input type="float" value=".5"  id="2sr1">
 	
 	
   <button onclick="playSineWave()">Wave</button>
@@ -27,6 +37,110 @@ var xValues = [];
 var yValues = [];
 
 
+
+
+
+
+function playSineWave() {
+	
+	//get frequency from html
+	var hzs = [
+	[document.getElementById("hz1").value,
+	document.getElementById("hz2").value,
+	document.getElementById("hz3").value,
+	document.getElementById("hz4").value,
+	document.getElementById("hz5").value,
+	document.getElementById("hz6").value,
+	document.getElementById("hz7").value,
+	document.getElementById("hz8").value,
+	document.getElementById("hz9").value,
+	document.getElementById("hz10").value],
+	[document.getElementById("2hz1").value,
+	document.getElementById("2hz2").value,
+	document.getElementById("2hz3").value,
+	document.getElementById("2hz4").value,
+	document.getElementById("2hz5").value,
+	document.getElementById("2hz6").value,
+	document.getElementById("2hz7").value,
+	document.getElementById("2hz8").value,
+	document.getElementById("2hz9").value,
+	document.getElementById("2hz10").value]
+	];
+	
+	var srs = [
+	document.getElementById("sr1").value,
+	document.getElementById("2sr1").value
+	];
+	
+	
+	//find longest tone length
+	var longtone = 0;
+	for (i = 0; i < srs.length; i++){
+		if (srs[i] > longtone){
+			longtone = i;
+			}
+		}
+		
+	
+	//make array for sine wave, use html for length
+	var sinearrays = [];
+	for (i=0; i < hzs.length; i++){
+		sinearrays[i] = new Float32Array(sampleRate * srs[longtone] * hzs[0].length);
+	}
+	
+	
+
+	var linexValues = [];
+	var lineyValues = [];
+
+
+	
+	for (k = 0; k < hzs.length; k++){
+		linexValues[k] = [];
+		lineyValues[k] = [];
+		for (i = 0; i < hzs[k].length; i++){
+			linexValues[k].push(i*srs[k]);
+			lineyValues[k].push(hzs[k][i]);
+		}
+	}
+	
+	
+	for (k = 0; k < hzs.length; k++){
+		for (i = 0; i < sinearrays[k].length; i++){
+			j = Math.floor(i/(sampleRate * srs[k]));
+	
+			//populate array for buffer			
+			sinearrays[k][i] = Math.sin(i * hzs[k][j] * 2 * Math.PI / sampleRate);
+		
+			
+		}
+	}
+
+new Chart("myChart", {
+  type: "line",
+  data: {
+	labels: linexValues[0],
+    datasets: [
+		{
+		data: lineyValues[0]
+		},
+		{
+		data: lineyValues[1]
+		}]
+  },
+  options: {
+    legend: {display: false},
+    scales: {
+      xAxes: [],
+      yAxes: [],
+    }
+  }
+});
+for (i = 0; i < sinearrays.length; i++){
+  playSound({ array: sinearrays[i], sampleRate });
+ }
+  
+}
 
 function playSound({ array, sampleRate }) {
   // We have to start with creating AudioContext
@@ -43,76 +157,7 @@ function playSound({ array, sampleRate }) {
 }
 
 
-function playSineWave() {
-	
-	//get frequency from html
-	var hzs = [];
-	hzs[0] = document.getElementById("hz1").value;
-	hzs[1] = document.getElementById("hz2").value;
-	hzs[2] = document.getElementById("hz3").value;
-	hzs[3] = document.getElementById("hz4").value;
-	hzs[4] = document.getElementById("hz5").value;
-	hzs[5] = document.getElementById("hz6").value;
-	hzs[6] = document.getElementById("hz7").value;
-	hzs[7] = document.getElementById("hz8").value;
-	hzs[8] = document.getElementById("hz9").value;
-	hzs[9] = document.getElementById("hz10").value;
-	
-	//make array for sine wave, use html for length
-	var sinewavelength = document.getElementById("sr1").value;
-	const sineWaveArray = new Float32Array(sampleRate * sinewavelength * hzs.length);
-	
-	wavexValues = [];
-	waveyValues = [];
-	linexValues = [];
-	lineyValues = [];
-	
-	
-	for (i = 0; i < hzs.length; i++){
-	linexValues.push(i);
-	lineyValues.push(hzs[i]);
-	}
-	
-	
-	for (i = 0; i < sineWaveArray.length; i++){
-		j = Math.floor(i/(sampleRate * sinewavelength));
-	
-		//populate array for buffer			
-		sineWaveArray[i] = Math.sin(i * hzs[j] * 2 * Math.PI / sampleRate);
-		
-		//populate values for graph
-		
-		if (i < sampleRate/100){
-		xValues.push(i);
-		yValues.push(sineWaveArray[i]);
-
-		}
-}
-
-new Chart("myChart", {
-  type: "line",
-  data: {
-  labels: linexValues,
-    datasets: [{
-      data: lineyValues
-    }]
-  },
-  options: {
-    legend: {display: false},
-    scales: {
-      xAxes: [],
-      yAxes: [],
-    }
-  }
-});
-
-  playSound({ array: sineWaveArray, sampleRate });
-  
-}
-
-
   </script>
 
 
 </html>
-
