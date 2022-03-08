@@ -1,0 +1,139 @@
+<html>
+
+	
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+<title>sinetists and experts</title>
+<h1>tone generator</h1>
+<p>every new line is a new track that will play in parallel with the others. notes are entered as frequencies, and separated by spaces or tabs. 
+<br> the chart only includes the first three tracks, but will play as many as are entered.</p>
+	frequencies (hz): <br>
+	<textarea id="freqs" rows="6" cols="128">
+300 400 300 200 240 300 360 300 360 300 360 400 300 200 240 300
+200 200 200 240 240 240 300 300 180 180 200 200 180 200 240 150
+150 200 150 120 100 120 150 180 90 90 180 300 240 100 120 225</textarea>
+	<br>
+	<br> lengths (s): <input type="float" value=".5"  id="sr1">
+	<br><br>
+	
+	
+	
+  <br><button onclick="playSineWave()">Wave</button>
+  <br><canvas id="myChart" style="width:100%;max-width:700px"></canvas>
+  
+  
+  <script>
+	
+const sampleRate = 44100;
+var xValues = [];
+var yValues = [];
+
+function playSineWave() {
+	
+	//get frequencies from html
+	var frequencies = document.getElementById("freqs").value;
+	var hzs = frequencies.split("\n");
+	var myfreqs = [];
+	var longestfreq = 0;
+	for (i=0; i<hzs.length; i++){
+		myfreqs[i] = hzs[i].split(/ |\t/);
+		if (myfreqs[i].length > myfreqs[longestfreq].length){
+			longestfreq = i;
+		}
+	}
+
+	//find wave length
+	var srs = document.getElementById("sr1").value;
+
+	//make array for sine wave
+	var sinearrays = [];
+	for (i=0; i < myfreqs.length + 1; i++){
+		sinearrays[i] = new Float32Array(sampleRate * srs * myfreqs[longestfreq].length);
+	}
+	
+	//get values for graph
+	var linexValues = [];
+	var lineyValues = [];
+	for (k = 0; k < myfreqs.length; k++){
+		linexValues[k] = [];
+		lineyValues[k] = [];
+		for (i = 0; i < myfreqs[k].length; i++){
+			linexValues[k].push(i*srs);
+			lineyValues[k].push(myfreqs[k][i]);
+		}
+		linexValues[k].push((i)*srs);
+		lineyValues[k].push(myfreqs[k][i-1]);
+	}
+	
+	//go through frequencies, turn into sine waves
+	for (k = 0; k < myfreqs.length; k++){
+		for (i = 0; i < sinearrays[k].length; i++){
+			j = Math.floor(i/(sampleRate * srs));
+	
+			//populate array for buffer (fill with 0s if no frequency)
+			if (myfreqs[k][j] > 0){
+				sinearrays[k][i] = Math.sin(i * myfreqs[k][j] * 2 * Math.PI / sampleRate);		
+				} else {
+				sinearrays[k][i] = 0;
+				}
+		}
+	}
+	
+		
+	
+	//combine sine waves	
+	console.log(sinearrays.length);
+	for (i = 0; i <sinearrays[k].length; i++){
+		for (j = 0; j < myfreqs.length; j++){
+			sinearrays[k][i] += sinearrays[j][i]/sinearrays.length;
+		}
+	}
+
+
+	new Chart("myChart", {
+	  type: "line",
+	  data: {
+		labels: linexValues[longestfreq],
+		datasets: [
+			{
+			data: lineyValues[0],
+			steppedLine: 'before',
+			},
+			{
+			data: lineyValues[1],
+			steppedLine: 'before',
+			},
+			{
+			data: lineyValues[2],
+			steppedLine: 'before',
+			},]
+		},
+	  options: {
+		legend: {display: false},
+	  }
+	});
+
+
+
+	playSound({ array: sinearrays[k], sampleRate }); 
+
+}
+
+function playSound({ array, sampleRate }) {
+  // We have to start with creating AudioContext
+  const audioContext = new AudioContext({sampleRate});
+  // create audio buffer of the same length as our array
+  const audioBuffer = audioContext.createBuffer(1, array.length, sampleRate);
+  // this copies our sine wave to the audio buffer
+  audioBuffer.copyToChannel(array, 0);
+  // some JavaScript magic to actually play the sound
+  const source = audioContext.createBufferSource();
+  source.connect(audioContext.destination);
+  source.buffer = audioBuffer;
+  source.start();
+}
+
+
+  </script>
+
+
+</html>
