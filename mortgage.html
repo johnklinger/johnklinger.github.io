@@ -5,7 +5,7 @@ House Information <br>
 Home Cost:      <input type="number" id="hcost" value="350000"><br>
 Down Payment:   <input type="number" id="dpay" value="45000"><br>
 Closings Costs: <input type="number" id="ccost" value="5000"><br>
-Equivalent Rent <input type="number" id="rent" value="1500"><br><br>
+Equivalent Rent <input type="number" id="rent" value="700"><br><br>
 Interest Rates: <br>
 15 year <input type="number" id="rate15" value="0.04125"><br>
 20 year <input type="number" id="rate20" value="0.04625"><br>
@@ -55,13 +55,76 @@ function calcMortgage() {
 	const homevalue30 = [];
 	const investmentvalue30 = [];
 	const networth30 = [];
+	const rentpay = [];
+	const investrent = [];
+	const investmentvaluerent = [];
+	const networthrent = [];
 	
 	
-	document.getElementById("test").innerHTML = principal;
-	console.log(((parseFloat(rate15)/12)+1)**180);
-	console.log(M15);
-	console.log(M20);
-	console.log(M30);
+	for (let i = 0; i < 30; i++){
+		months[i]=1+i;
+		//15 year tables
+		if (i < 15){
+			mortgage15[i]=M15*12;
+			investment15[i]=0;
+			debt15[i]=(M15*180)-(mortgage15[i]*(i+1))
+			} else {
+			mortgage15[i]=0;
+			investment15[i]=M15*12;
+			debt15[i]=0;
+			}
+		homevalue15[i]=parseFloat(hcost)*(parseFloat(app)**i)
+		if (i < 1){
+			investmentvalue15[i]=investment15[i];
+			} else {
+			investmentvalue15[i]=investmentvalue15[i-1]*parseFloat(inv) + investment15[i]
+		}
+		networth15[i] = investmentvalue15[i] + homevalue15[i] - debt15[i];
+		
+		//20 year tables
+		if (i < 20){
+			mortgage20[i]=M20*12;
+			investment20[i]=(M15*12)-mortgage20[i];
+			debt20[i]=(M20*240)-(mortgage20[i]*(i+1))
+			} else {
+			mortgage20[i]=0;
+			investment20[i]=M15*12;
+			debt20[i]=0;
+			}
+		homevalue20[i]=parseFloat(hcost)*(parseFloat(app)**i)
+		if (i < 1){
+			investmentvalue20[i]=investment20[i];
+			} else {
+			investmentvalue20[i]=investmentvalue20[i-1]*parseFloat(inv) + investment20[i]
+		}
+		networth20[i] = investmentvalue20[i] + homevalue20[i] - debt20[i];
+		
+		//30 year tables
+		mortgage30[i]=M30*12;
+		investment30[i]=(M15*12)-mortgage30[i];
+		debt30[i]=(M30*360)-(mortgage30[i]*(i+1));
+		homevalue30[i]=parseFloat(hcost)*(parseFloat(app)**i);
+		if (i < 1){
+			investmentvalue30[i]=investment30[i];
+			} else {
+			investmentvalue30[i]=investmentvalue30[i-1]*parseFloat(inv) + investment30[i];
+		}
+		networth30[i] = investmentvalue30[i] + homevalue30[i] - debt30[i];
+		
+		//rent tables
+		rentpay[i]= parseFloat(rent)*12 * (parseFloat(rin)**i);
+		investrent[i]=(M15*12)-rentpay[i];
+		if (i < 1){
+			investmentvaluerent[i]=investrent[i]+parseFloat(dpay)+parseFloat(ccost);
+			} else {
+			investmentvaluerent[i]=investmentvaluerent[i-1]*parseFloat(inv) + investrent[i];
+		}
+		networthrent[i]=investmentvaluerent[i];
+		}
+	
+	
+	document.getElementById("test").innerHTML = networth15[0];
+
 }
  </script>
 </html>
