@@ -1,0 +1,67 @@
+<html>
+<title>mortgage value comparison</title>
+<h1>should you get a house??</h1>
+House Information <br>
+Home Cost:      <input type="number" id="hcost" value="350000"><br>
+Down Payment:   <input type="number" id="dpay" value="45000"><br>
+Closings Costs: <input type="number" id="ccost" value="5000"><br>
+Equivalent Rent <input type="number" id="rent" value="1500"><br><br>
+Interest Rates: <br>
+15 year <input type="number" id="rate15" value="0.04125"><br>
+20 year <input type="number" id="rate20" value="0.04625"><br>
+30 year <input type="number" id="rate30" value="0.0475"><br>
+Annual Investment Return (%) <input type="number" id="inv" value="1.06"><br>
+Annual Home Appreciation (%) <input type="number" id="app" value="1.06"><br>
+Annual Rent Increase (%)     <input type="number" id="rin" value="1.06"><br>
+ <br><button onclick="calcMortgage()">Calculate Mortgage Comparisons</button>
+ <p id="test"></p>
+ 
+ 
+ <script>
+function calcMortgage() { 
+	var hcost = document.getElementById("hcost").value;
+	var dpay = document.getElementById("dpay").value;
+	var ccost = document.getElementById("ccost").value;
+	var rent = document.getElementById("rent").value;
+	var rate15 = document.getElementById("rate15").value;
+	var rate20 = document.getElementById("rate20").value;
+	var rate30 = document.getElementById("rate30").value;
+	var inv = document.getElementById("inv").value;
+	var app = document.getElementById("app").value;
+	var rin = document.getElementById("rin").value;
+	
+	//calc variables
+	var principal = parseFloat(hcost) - parseFloat(dpay);
+	var M15 = principal * (((parseFloat(rate15)/12) * (((parseFloat(rate15)/12)+1)**180))/((((parseFloat(rate15)/12)+1)**180)-1));
+	var M20 = principal * (((parseFloat(rate20)/12) * (((parseFloat(rate20)/12)+1)**240))/((((parseFloat(rate20)/12)+1)**240)-1));
+	var M30 = principal * (((parseFloat(rate30)/12) * (((parseFloat(rate30)/12)+1)**360))/((((parseFloat(rate30)/12)+1)**360)-1));
+	
+	const months = [];
+	const mortgage15 = [];
+	const investment15 = [];
+	const debt15 = [];
+	const homevalue15 = [];
+	const investmentvalue15 = [];
+	const networth15 = [];
+	const mortgage20 = [];
+	const investment20 = [];
+	const debt20 = [];
+	const homevalue20 = [];
+	const investmentvalue20 = [];
+	const networth20 = [];
+	const mortgage30 = [];
+	const investment30 = [];
+	const debt30 = [];
+	const homevalue30 = [];
+	const investmentvalue30 = [];
+	const networth30 = [];
+	
+	
+	document.getElementById("test").innerHTML = principal;
+	console.log(((parseFloat(rate15)/12)+1)**180);
+	console.log(M15);
+	console.log(M20);
+	console.log(M30);
+}
+ </script>
+</html>
