@@ -5,7 +5,8 @@ House Information <br>
 Home Cost:      <input type="number" id="hcost" value="350000"><br>
 Down Payment:   <input type="number" id="dpay" value="45000"><br>
 Closings Costs: <input type="number" id="ccost" value="5000"><br>
-Equivalent Rent <input type="number" id="rent" value="700"><br><br>
+Taxes/Home Insurance: <input type="number" id="tax" value="7000"><br>
+Equivalent Rent: <input type="number" id="rent" value="1500"><br><br>
 Interest Rates: <br>
 15 year <input type="number" id="rate15" value="0.04125"><br>
 20 year <input type="number" id="rate20" value="0.04625"><br>
@@ -13,22 +14,43 @@ Interest Rates: <br>
 Annual Investment Return (%) <input type="number" id="inv" value="1.06"><br>
 Annual Home Appreciation (%) <input type="number" id="app" value="1.06"><br>
 Annual Rent Increase (%)     <input type="number" id="rin" value="1.06"><br>
+Average Pay Raise (%)	<input type="number" id="payraise" value="1.06"><br>
+
+<p>The foundation of this comparison is a fixed budget across all of our options. I chose the annual total of the 15-year mortgage as our yearly budget for mortgage+fees+investments,
+ since that guaranteed there would never be anyone in the negative. I assumed the budget would go up each year along with the salary of the user. The actual mortgage payment is calculated through the formula 
+ I found <a href="https://www.wallstreetmojo.com/mortgage-formula/">here</a>, and while taxes/insurance is technically a function of the price and state I just left it as something the user inputs since it varies a lot. 
+ The investment is presumed to be whatever is left over of the budget after paying mortgage/fees/rent. This allows us to do a direct comparison of net worths. </p>
+ <p>I assumed that the down payment would be invested in the "rent" scenario, hence the large initial investment there. Equivalent rent is meant to correct for anyone who lives in a really shitty apartment now 
+ but wants to move into a nice house. You should try to choose the rent of an equally nice apartment as whatever house you're looking at for a fair comparison. </p>
+
  <br><button onclick="calcMortgage()">Calculate Mortgage Comparisons</button>
- <p id="test"></p>
+ <br><br>SUMMARY TABLE<br>
+ <p id="table"></p>
+ <br>15 YEAR MORTGAGE BREAKDOWN<br>
+ <p id="table15"></p>
+ <br>20 YEAR MORTGAGE BREAKDOWN<br>
+ <p id="table20"></p>
+ <br>30 YEAR MORTGAGE BREAKDOWN<br>
+ <p id="table30"></p>
+ <br>RENT BREAKDOWN<br>
+ <p id="tablerent"></p>
  
  
  <script>
 function calcMortgage() { 
+	//get variables from html
 	var hcost = document.getElementById("hcost").value;
 	var dpay = document.getElementById("dpay").value;
 	var ccost = document.getElementById("ccost").value;
 	var rent = document.getElementById("rent").value;
+	var tax = document.getElementById("tax").value;
 	var rate15 = document.getElementById("rate15").value;
 	var rate20 = document.getElementById("rate20").value;
 	var rate30 = document.getElementById("rate30").value;
 	var inv = document.getElementById("inv").value;
 	var app = document.getElementById("app").value;
 	var rin = document.getElementById("rin").value;
+	var payraise = document.getElementById("payraise").value;
 	
 	//calc variables
 	var principal = parseFloat(hcost) - parseFloat(dpay);
@@ -37,22 +59,22 @@ function calcMortgage() {
 	var M30 = principal * (((parseFloat(rate30)/12) * (((parseFloat(rate30)/12)+1)**360))/((((parseFloat(rate30)/12)+1)**360)-1));
 	
 	const months = [];
+	const budget = [];
+	const taxs = [];
 	const mortgage15 = [];
 	const investment15 = [];
 	const debt15 = [];
-	const homevalue15 = [];
+	const homevalue = [];
 	const investmentvalue15 = [];
 	const networth15 = [];
 	const mortgage20 = [];
 	const investment20 = [];
 	const debt20 = [];
-	const homevalue20 = [];
 	const investmentvalue20 = [];
 	const networth20 = [];
 	const mortgage30 = [];
 	const investment30 = [];
 	const debt30 = [];
-	const homevalue30 = [];
 	const investmentvalue30 = [];
 	const networth30 = [];
 	const rentpay = [];
@@ -63,67 +85,231 @@ function calcMortgage() {
 	
 	for (let i = 0; i < 30; i++){
 		months[i]=1+i;
+		taxs[i]=parseFloat(tax)*(parseFloat(app)**i);
+		budget[i]=((M15*12)+taxs[0])*(parseFloat(payraise)**i);
+		homevalue[i]=parseFloat(hcost)*(parseFloat(app)**i)
+		
 		//15 year tables
 		if (i < 15){
 			mortgage15[i]=M15*12;
-			investment15[i]=0;
 			debt15[i]=(M15*180)-(mortgage15[i]*(i+1))
 			} else {
 			mortgage15[i]=0;
-			investment15[i]=M15*12;
 			debt15[i]=0;
 			}
-		homevalue15[i]=parseFloat(hcost)*(parseFloat(app)**i)
+		
+		investment15[i]=budget[i]-mortgage15[i]-taxs[i];
+		
 		if (i < 1){
 			investmentvalue15[i]=investment15[i];
 			} else {
 			investmentvalue15[i]=investmentvalue15[i-1]*parseFloat(inv) + investment15[i]
 		}
-		networth15[i] = investmentvalue15[i] + homevalue15[i] - debt15[i];
+		networth15[i] = investmentvalue15[i] + homevalue[i] - debt15[i];
 		
 		//20 year tables
 		if (i < 20){
 			mortgage20[i]=M20*12;
-			investment20[i]=(M15*12)-mortgage20[i];
 			debt20[i]=(M20*240)-(mortgage20[i]*(i+1))
 			} else {
 			mortgage20[i]=0;
-			investment20[i]=M15*12;
 			debt20[i]=0;
 			}
-		homevalue20[i]=parseFloat(hcost)*(parseFloat(app)**i)
+		investment20[i]=budget[i]-mortgage20[i]-taxs[i];	
+			
 		if (i < 1){
 			investmentvalue20[i]=investment20[i];
 			} else {
 			investmentvalue20[i]=investmentvalue20[i-1]*parseFloat(inv) + investment20[i]
 		}
-		networth20[i] = investmentvalue20[i] + homevalue20[i] - debt20[i];
+		networth20[i] = investmentvalue20[i] + homevalue[i] - debt20[i];
 		
 		//30 year tables
 		mortgage30[i]=M30*12;
-		investment30[i]=(M15*12)-mortgage30[i];
 		debt30[i]=(M30*360)-(mortgage30[i]*(i+1));
-		homevalue30[i]=parseFloat(hcost)*(parseFloat(app)**i);
+		investment30[i]=budget[i]-mortgage30[i]-taxs[i];
+		
 		if (i < 1){
 			investmentvalue30[i]=investment30[i];
 			} else {
 			investmentvalue30[i]=investmentvalue30[i-1]*parseFloat(inv) + investment30[i];
 		}
-		networth30[i] = investmentvalue30[i] + homevalue30[i] - debt30[i];
+		networth30[i] = investmentvalue30[i] + homevalue[i] - debt30[i];
 		
 		//rent tables
 		rentpay[i]= parseFloat(rent)*12 * (parseFloat(rin)**i);
-		investrent[i]=(M15*12)-rentpay[i];
 		if (i < 1){
-			investmentvaluerent[i]=investrent[i]+parseFloat(dpay)+parseFloat(ccost);
+			investrent[i]=budget[i]+parseFloat(dpay)+parseFloat(ccost)-rentpay[i];
+			investmentvaluerent[i]=investrent[i];
 			} else {
+			investrent[i]=budget[i]-rentpay[i];
 			investmentvaluerent[i]=investmentvaluerent[i-1]*parseFloat(inv) + investrent[i];
 		}
 		networthrent[i]=investmentvaluerent[i];
 		}
+
+//summary table	
+
+    var myTable= "<table><tr><td style='width: 50px; color: red;'>Year</td>";
+    myTable+= "<td style='width: 200px; color: red; text-align: right;'>Net Worth (15Y Mortgage)</td>";
+	myTable+= "<td style='width: 200px; color: red; text-align: right;'>Net Worth (20Y Mortgage)</td>";
+	myTable+= "<td style='width: 200px; color: red; text-align: right;'>Net Worth (30Y Mortgage)</td>";
+    myTable+="<td style='width: 200px; color: red; text-align: right;'>Net Worth (Renting)</td></tr>";
+
+    myTable+="<tr><td style='width: 50px;                   '>-------</td>";
+    myTable+="<td     style='width: 100px; text-align: right;'>---------------</td>";
+	myTable+="<td     style='width: 100px; text-align: right;'>---------------</td>";
+	myTable+="<td     style='width: 100px; text-align: right;'>---------------</td>";
+    myTable+="<td     style='width: 100px; text-align: right;'>---------------</td></tr>";
+
+  for (var i=0; i<30; i++) {
+    myTable+="<tr><td style='width: 50x;'>" + (i+1);
+	myTable+="<td style='width: 100px; text-align: right;'>" + networth15[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+    myTable+="<td style='width: 100px; text-align: right;'>" + networth20[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+	myTable+="<td style='width: 100px; text-align: right;'>" + networth30[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+    myTable+="<td style='width: 100px; text-align: right;'>" + networthrent[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td></tr>";
+  }  
+   myTable+="</table>";
+
+//15y mortgage detail table
+
+    var myTable2= "<table><tr><td style='width: 50px; color: red;'>Year</td>";
+    myTable2+= "<td style='width: 200px; color: red; text-align: right;'>Budget</td>";
+	myTable2+= "<td style='width: 200px; color: red; text-align: right;'>Mortgage</td>";
+	myTable2+= "<td style='width: 200px; color: red; text-align: right;'>Taxes/Fees</td>";
+	myTable2+= "<td style='width: 200px; color: red; text-align: right;'>Investment</td>";
+	myTable2+= "<td style='width: 200px; color: red; text-align: right;'>Debt Remaining</td>";
+	myTable2+= "<td style='width: 200px; color: red; text-align: right;'>Home Value</td>";
+	myTable2+= "<td style='width: 200px; color: red; text-align: right;'>Investment Value</td>";
+    myTable2+="<td style='width: 200px; color: red; text-align: right;'>Net Worth</td></tr>";
+
+    myTable2+="<tr><td style='width: 50px;                   '>-------</td>";
+    myTable2+="<td     style='width: 100px; text-align: right;'>---------------</td>";
+	myTable2+="<td     style='width: 100px; text-align: right;'>---------------</td>";
+	myTable2+="<td     style='width: 100px; text-align: right;'>---------------</td>";
+	myTable2+="<td     style='width: 100px; text-align: right;'>---------------</td>";
+	myTable2+="<td     style='width: 100px; text-align: right;'>---------------</td>";
+	myTable2+="<td     style='width: 100px; text-align: right;'>---------------</td>";
+	myTable2+="<td     style='width: 100px; text-align: right;'>---------------</td>";
+    myTable2+="<td     style='width: 100px; text-align: right;'>---------------</td></tr>";
+
+  for (var i=0; i<30; i++) {
+    myTable2+="<tr><td style='width: 50x;'>" + (i+1);
+    myTable2+="<td style='width: 100px; text-align: right;'>" + budget[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+	myTable2+="<td style='width: 100px; text-align: right;'>" + mortgage15[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+	myTable2+="<td style='width: 100px; text-align: right;'>" + taxs[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+	myTable2+="<td style='width: 100px; text-align: right;'>" + investment15[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+	myTable2+="<td style='width: 100px; text-align: right;'>" + debt15[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+	myTable2+="<td style='width: 100px; text-align: right;'>" + homevalue[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+	myTable2+="<td style='width: 100px; text-align: right;'>" + investmentvalue15[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+    myTable2+="<td style='width: 100px; text-align: right;'>" + networth15[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td></tr>";
+  }  
+   myTable2+="</table>";
+   
+   //20y mortgage detail table
+
+    var myTable3= "<table><tr><td style='width: 50px; color: red;'>Year</td>";
+    myTable3+= "<td style='width: 200px; color: red; text-align: right;'>Budget</td>";
+	myTable3+= "<td style='width: 200px; color: red; text-align: right;'>Mortgage</td>";
+	myTable3+= "<td style='width: 200px; color: red; text-align: right;'>Taxes/Fees</td>";
+	myTable3+= "<td style='width: 200px; color: red; text-align: right;'>Investment</td>";
+	myTable3+= "<td style='width: 200px; color: red; text-align: right;'>Debt Remaining</td>";
+	myTable3+= "<td style='width: 200px; color: red; text-align: right;'>Home Value</td>";
+	myTable3+= "<td style='width: 200px; color: red; text-align: right;'>Investment Value</td>";
+    myTable3+="<td style='width: 200px; color: red; text-align: right;'>Net Worth</td></tr>";
+
+    myTable3+="<tr><td style='width: 50px;                   '>-------</td>";
+    myTable3+="<td     style='width: 100px; text-align: right;'>---------------</td>";
+	myTable3+="<td     style='width: 100px; text-align: right;'>---------------</td>";
+	myTable3+="<td     style='width: 100px; text-align: right;'>---------------</td>";
+	myTable3+="<td     style='width: 100px; text-align: right;'>---------------</td>";
+	myTable3+="<td     style='width: 100px; text-align: right;'>---------------</td>";
+	myTable3+="<td     style='width: 100px; text-align: right;'>---------------</td>";
+	myTable3+="<td     style='width: 100px; text-align: right;'>---------------</td>";
+    myTable3+="<td     style='width: 100px; text-align: right;'>---------------</td></tr>";
+
+  for (var i=0; i<30; i++) {
+    myTable3+="<tr><td style='width: 50x;'>" + (i+1);
+    myTable3+="<td style='width: 100px; text-align: right;'>" + budget[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+	myTable3+="<td style='width: 100px; text-align: right;'>" + mortgage20[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+	myTable3+="<td style='width: 100px; text-align: right;'>" + taxs[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+	myTable3+="<td style='width: 100px; text-align: right;'>" + investment20[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+	myTable3+="<td style='width: 100px; text-align: right;'>" + debt20[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+	myTable3+="<td style='width: 100px; text-align: right;'>" + homevalue[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+	myTable3+="<td style='width: 100px; text-align: right;'>" + investmentvalue20[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+    myTable3+="<td style='width: 100px; text-align: right;'>" + networth20[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td></tr>";
+  }  
+   myTable3+="</table>";
+   
+   //30y mortgage detail table
+
+    var myTable4= "<table><tr><td style='width: 50px; color: red;'>Year</td>";
+    myTable4+= "<td style='width: 200px; color: red; text-align: right;'>Budget</td>";
+	myTable4+= "<td style='width: 200px; color: red; text-align: right;'>Mortgage</td>";
+	myTable4+= "<td style='width: 200px; color: red; text-align: right;'>Taxes/Fees</td>";
+	myTable4+= "<td style='width: 200px; color: red; text-align: right;'>Investment</td>";
+	myTable4+= "<td style='width: 200px; color: red; text-align: right;'>Debt Remaining</td>";
+	myTable4+= "<td style='width: 200px; color: red; text-align: right;'>Home Value</td>";
+	myTable4+= "<td style='width: 200px; color: red; text-align: right;'>Investment Value</td>";
+    myTable4+="<td style='width: 200px; color: red; text-align: right;'>Net Worth</td></tr>";
+
+    myTable4+="<tr><td style='width: 50px;                   '>-------</td>";
+    myTable4+="<td     style='width: 100px; text-align: right;'>---------------</td>";
+	myTable4+="<td     style='width: 100px; text-align: right;'>---------------</td>";
+	myTable4+="<td     style='width: 100px; text-align: right;'>---------------</td>";
+	myTable4+="<td     style='width: 100px; text-align: right;'>---------------</td>";
+	myTable4+="<td     style='width: 100px; text-align: right;'>---------------</td>";
+	myTable4+="<td     style='width: 100px; text-align: right;'>---------------</td>";
+	myTable4+="<td     style='width: 100px; text-align: right;'>---------------</td>";
+    myTable4+="<td     style='width: 100px; text-align: right;'>---------------</td></tr>";
+
+  for (var i=0; i<30; i++) {
+    myTable4+="<tr><td style='width: 50x;'>" + (i+1);
+    myTable4+="<td style='width: 100px; text-align: right;'>" + budget[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+	myTable4+="<td style='width: 100px; text-align: right;'>" + mortgage30[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+	myTable4+="<td style='width: 100px; text-align: right;'>" + taxs[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+	myTable4+="<td style='width: 100px; text-align: right;'>" + investment30[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+	myTable4+="<td style='width: 100px; text-align: right;'>" + debt30[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+	myTable4+="<td style='width: 100px; text-align: right;'>" + homevalue[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+	myTable4+="<td style='width: 100px; text-align: right;'>" + investmentvalue30[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+    myTable4+="<td style='width: 100px; text-align: right;'>" + networth30[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td></tr>";
+  }  
+   myTable4+="</table>";
+   
+      //rent detail table
+
+    var myTable5= "<table><tr><td style='width: 50px; color: red;'>Year</td>";
+    myTable5+= "<td style='width: 200px; color: red; text-align: right;'>Budget</td>";
+	myTable5+= "<td style='width: 200px; color: red; text-align: right;'>Rent</td>";
+	myTable5+= "<td style='width: 200px; color: red; text-align: right;'>Investment</td>";
+	myTable5+= "<td style='width: 200px; color: red; text-align: right;'>Investment Value</td>";
+    myTable5+="<td style='width: 200px; color: red; text-align: right;'>Net Worth</td></tr>";
+
+    myTable5+="<tr><td style='width: 50px;                   '>-------</td>";
+    myTable5+="<td     style='width: 100px; text-align: right;'>---------------</td>";
+	myTable5+="<td     style='width: 100px; text-align: right;'>---------------</td>";
+	myTable5+="<td     style='width: 100px; text-align: right;'>---------------</td>";
+	myTable5+="<td     style='width: 100px; text-align: right;'>---------------</td>";
+    myTable5+="<td     style='width: 100px; text-align: right;'>---------------</td></tr>";
+
+  for (var i=0; i<30; i++) {
+    myTable5+="<tr><td style='width: 50x;'>" + (i+1);
+    myTable5+="<td style='width: 100px; text-align: right;'>" + budget[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+	myTable5+="<td style='width: 100px; text-align: right;'>" + rentpay[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+	myTable5+="<td style='width: 100px; text-align: right;'>" + investrent[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+	myTable5+="<td style='width: 100px; text-align: right;'>" + investmentvaluerent[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+    myTable5+="<td style='width: 100px; text-align: right;'>" + networthrent[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td></tr>";
+  }  
+   myTable5+="</table>";
+   
+
+
+document.getElementById('table').innerHTML = myTable;
+document.getElementById('table15').innerHTML = myTable2;
+document.getElementById('table20').innerHTML = myTable3;
+document.getElementById('table30').innerHTML = myTable4;
+document.getElementById('tablerent').innerHTML = myTable5;
 	
-	
-	document.getElementById("test").innerHTML = networth15[0];
 
 }
  </script>
