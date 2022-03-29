@@ -1,5 +1,17 @@
 <html>
 <title>mortgage value comparison</title>
+<style>
+{
+	border: 1px solid #ddd;
+	padding: 2px;
+	border-collapse: collapse;
+}
+
+tr:nth-child(even){background-color: #f2f2f2;}
+
+tr:hover {background-color: #ddd;}
+
+</style>
 <h1>should you get a house??</h1>
 House Information <br>
 Home Cost:      <input type="number" id="hcost" value="350000"><br>
@@ -8,13 +20,13 @@ Closings Costs: <input type="number" id="ccost" value="5000"><br>
 Taxes/Home Insurance: <input type="number" id="tax" value="7000"><br>
 Equivalent Rent: <input type="number" id="rent" value="1500"><br><br>
 Interest Rates: <br>
-15 year <input type="number" id="rate15" value="0.04125"><br>
-20 year <input type="number" id="rate20" value="0.04625"><br>
-30 year <input type="number" id="rate30" value="0.0475"><br>
-Annual Investment Return (%) <input type="number" id="inv" value="1.06"><br>
-Annual Home Appreciation (%) <input type="number" id="app" value="1.06"><br>
-Annual Rent Increase (%)     <input type="number" id="rin" value="1.06"><br>
-Average Pay Raise (%)	<input type="number" id="payraise" value="1.06"><br>
+15 year (%): <input type="number" id="rate15" value="4.125"><br>
+20 year (%): <input type="number" id="rate20" value="4.625"><br>
+30 year (%): <input type="number" id="rate30" value="4.75"><br>
+Annual Investment Return (%): <input type="number" id="inv" value="6"><br>
+Annual Home Appreciation (%): <input type="number" id="app" value="6"><br>
+Annual Rent Increase (%):     <input type="number" id="rin" value="6"><br>
+Average Pay Raise (%):	<input type="number" id="payraise" value="6"><br>
 
 <p>The foundation of this comparison is a fixed budget across all of our options. I chose the annual total of the 15-year mortgage as our yearly budget for mortgage+fees+investments,
  since that guaranteed there would never be anyone in the negative. I assumed the budget would go up each year along with the salary of the user. The actual mortgage payment is calculated through the formula 
@@ -51,6 +63,15 @@ function calcMortgage() {
 	var app = document.getElementById("app").value;
 	var rin = document.getElementById("rin").value;
 	var payraise = document.getElementById("payraise").value;
+	
+	//adjust variables
+	rate15 = parseFloat(rate15)/100;
+	rate20 = parseFloat(rate20)/100;
+	rate30 = parseFloat(rate30)/100;
+	inv = 1 + parseFloat(inv)/100;
+	app = 1 + parseFloat(app)/100;
+	rin = 1 + parseFloat(rin)/100;
+	payraise = 1 + parseFloat(payraise)/100;
 	
 	//calc variables
 	var principal = parseFloat(hcost) - parseFloat(dpay);
@@ -156,19 +177,43 @@ function calcMortgage() {
 	myTable+= "<td style='width: 200px; color: red; text-align: right;'>Net Worth (30Y Mortgage)</td>";
     myTable+="<td style='width: 200px; color: red; text-align: right;'>Net Worth (Renting)</td></tr>";
 
-    myTable+="<tr><td style='width: 50px;                   '>-------</td>";
-    myTable+="<td     style='width: 100px; text-align: right;'>---------------</td>";
-	myTable+="<td     style='width: 100px; text-align: right;'>---------------</td>";
-	myTable+="<td     style='width: 100px; text-align: right;'>---------------</td>";
-    myTable+="<td     style='width: 100px; text-align: right;'>---------------</td></tr>";
-
   for (var i=0; i<30; i++) {
     myTable+="<tr><td style='width: 50x;'>" + (i+1);
-	myTable+="<td style='width: 100px; text-align: right;'>" + networth15[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
-    myTable+="<td style='width: 100px; text-align: right;'>" + networth20[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
-	myTable+="<td style='width: 100px; text-align: right;'>" + networth30[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
-    myTable+="<td style='width: 100px; text-align: right;'>" + networthrent[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td></tr>";
-  }  
+	if (i < 1){
+		myTable+="<td style='width: 100px; text-align: right;'>" + networth15[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+		myTable+="<td style='width: 100px; text-align: right;'>" + networth20[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+		myTable+="<td style='width: 100px; text-align: right;'>" + networth30[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+		} else {
+			if (networth15[i-1] < networthrent[i-1]){
+				if (networth15[i] > networthrent[i]){
+					myTable+="<td style='width: 100px; color: lawngreen; text-align: right;'>" + networth15[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+					} else {
+					myTable+="<td style='width: 100px; text-align: right;'>" + networth15[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+				}
+			} else {
+				myTable+="<td style='width: 100px; text-align: right;'>" + networth15[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+		}
+			if (networth20[i-1] < networthrent[i-1]){
+				if (networth20[i] > networthrent[i]){
+					myTable+="<td style='width: 100px; color: lawngreen; text-align: right;'>" + networth20[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+					} else {
+					myTable+="<td style='width: 100px; text-align: right;'>" + networth20[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+				}
+			} else {
+				myTable+="<td style='width: 100px; text-align: right;'>" + networth20[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+		}
+			if (networth30[i-1] < networthrent[i-1]){
+				if (networth30[i] > networthrent[i]){
+					myTable+="<td style='width: 100px; color: lawngreen; text-align: right;'>" + networth30[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+					} else {
+					myTable+="<td style='width: 100px; text-align: right;'>" + networth30[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+				}
+			} else {
+				myTable+="<td style='width: 100px; text-align: right;'>" + networth30[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
+		}
+	}
+	myTable+="<td style='width: 100px; text-align: right;'>" + networthrent[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td></tr>";
+  }
    myTable+="</table>";
 
 //15y mortgage detail table
@@ -182,16 +227,6 @@ function calcMortgage() {
 	myTable2+= "<td style='width: 200px; color: red; text-align: right;'>Home Value</td>";
 	myTable2+= "<td style='width: 200px; color: red; text-align: right;'>Investment Value</td>";
     myTable2+="<td style='width: 200px; color: red; text-align: right;'>Net Worth</td></tr>";
-
-    myTable2+="<tr><td style='width: 50px;                   '>-------</td>";
-    myTable2+="<td     style='width: 100px; text-align: right;'>---------------</td>";
-	myTable2+="<td     style='width: 100px; text-align: right;'>---------------</td>";
-	myTable2+="<td     style='width: 100px; text-align: right;'>---------------</td>";
-	myTable2+="<td     style='width: 100px; text-align: right;'>---------------</td>";
-	myTable2+="<td     style='width: 100px; text-align: right;'>---------------</td>";
-	myTable2+="<td     style='width: 100px; text-align: right;'>---------------</td>";
-	myTable2+="<td     style='width: 100px; text-align: right;'>---------------</td>";
-    myTable2+="<td     style='width: 100px; text-align: right;'>---------------</td></tr>";
 
   for (var i=0; i<30; i++) {
     myTable2+="<tr><td style='width: 50x;'>" + (i+1);
@@ -218,16 +253,6 @@ function calcMortgage() {
 	myTable3+= "<td style='width: 200px; color: red; text-align: right;'>Investment Value</td>";
     myTable3+="<td style='width: 200px; color: red; text-align: right;'>Net Worth</td></tr>";
 
-    myTable3+="<tr><td style='width: 50px;                   '>-------</td>";
-    myTable3+="<td     style='width: 100px; text-align: right;'>---------------</td>";
-	myTable3+="<td     style='width: 100px; text-align: right;'>---------------</td>";
-	myTable3+="<td     style='width: 100px; text-align: right;'>---------------</td>";
-	myTable3+="<td     style='width: 100px; text-align: right;'>---------------</td>";
-	myTable3+="<td     style='width: 100px; text-align: right;'>---------------</td>";
-	myTable3+="<td     style='width: 100px; text-align: right;'>---------------</td>";
-	myTable3+="<td     style='width: 100px; text-align: right;'>---------------</td>";
-    myTable3+="<td     style='width: 100px; text-align: right;'>---------------</td></tr>";
-
   for (var i=0; i<30; i++) {
     myTable3+="<tr><td style='width: 50x;'>" + (i+1);
     myTable3+="<td style='width: 100px; text-align: right;'>" + budget[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
@@ -253,16 +278,6 @@ function calcMortgage() {
 	myTable4+= "<td style='width: 200px; color: red; text-align: right;'>Investment Value</td>";
     myTable4+="<td style='width: 200px; color: red; text-align: right;'>Net Worth</td></tr>";
 
-    myTable4+="<tr><td style='width: 50px;                   '>-------</td>";
-    myTable4+="<td     style='width: 100px; text-align: right;'>---------------</td>";
-	myTable4+="<td     style='width: 100px; text-align: right;'>---------------</td>";
-	myTable4+="<td     style='width: 100px; text-align: right;'>---------------</td>";
-	myTable4+="<td     style='width: 100px; text-align: right;'>---------------</td>";
-	myTable4+="<td     style='width: 100px; text-align: right;'>---------------</td>";
-	myTable4+="<td     style='width: 100px; text-align: right;'>---------------</td>";
-	myTable4+="<td     style='width: 100px; text-align: right;'>---------------</td>";
-    myTable4+="<td     style='width: 100px; text-align: right;'>---------------</td></tr>";
-
   for (var i=0; i<30; i++) {
     myTable4+="<tr><td style='width: 50x;'>" + (i+1);
     myTable4+="<td style='width: 100px; text-align: right;'>" + budget[i].toLocaleString("en-US", {style:"currency", currency:"USD"}) + "</td>";
@@ -284,13 +299,6 @@ function calcMortgage() {
 	myTable5+= "<td style='width: 200px; color: red; text-align: right;'>Investment</td>";
 	myTable5+= "<td style='width: 200px; color: red; text-align: right;'>Investment Value</td>";
     myTable5+="<td style='width: 200px; color: red; text-align: right;'>Net Worth</td></tr>";
-
-    myTable5+="<tr><td style='width: 50px;                   '>-------</td>";
-    myTable5+="<td     style='width: 100px; text-align: right;'>---------------</td>";
-	myTable5+="<td     style='width: 100px; text-align: right;'>---------------</td>";
-	myTable5+="<td     style='width: 100px; text-align: right;'>---------------</td>";
-	myTable5+="<td     style='width: 100px; text-align: right;'>---------------</td>";
-    myTable5+="<td     style='width: 100px; text-align: right;'>---------------</td></tr>";
 
   for (var i=0; i<30; i++) {
     myTable5+="<tr><td style='width: 50x;'>" + (i+1);
