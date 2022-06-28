@@ -1,0 +1,23 @@
+#clockContainer {
+    position: relative;
+    margin: auto;
+    height: 40vw;
+    /*to make the height and width responsive*/
+    width: 40vw;
+    background: url(clock.jpg) no-repeat;
+    /*setting our background image*/
+    background-size: 100%;
+}
+#second {
+    position: absolute;
+    background: black;
+    border-radius: 10px;
+    transform-origin: bottom;
+}
+#second {
+    width: 1%;
+    height: 49%;
+    top: 0%;
+    left: 49.25%;
+    opacity: 0.8;
+}

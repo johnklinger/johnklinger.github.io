@@ -1,0 +1,73 @@
+<html>
+<title>the infinity game</title>
+<h1>can you get to 1.78E308 (or as javascript calls it, infinity)??</h1>
+
+<div id="results"></div>
+
+<p>x = <span id="seccys"></span><span id="speedtext"></span></p>
+
+<div id='seconds-counter'> </div>
+<br>
+<br><button onclick="speed()">exponentilate</button>
+
+<head>
+    <link rel="stylesheet" href="idle.css">
+
+</head>
+<body>
+    <div id="clockContainer">
+        <div id="second"></div>
+    </div>
+</body>
+
+<script>
+
+var resultsContainer = document.getElementById('results');
+
+var seconds = 0;
+var v = 1;
+var exp = 1;
+var el = document.getElementById('seconds-counter');
+var secs = document.getElementById('seccys');
+
+
+function incrementSeconds() {
+	if(Math.floor(seconds ** exp) <= Number.MAX_VALUE){
+    seconds+=0.01;
+    el.innerText = 'x = ' + Math.floor(seconds ** exp);
+	secs.innerText = Math.floor(seconds);
+	sec_rotation = 360 * seconds;
+	second.style.transform = `rotate(${sec_rotation}deg)`;
+	} else {
+	
+	seconds+=0.01;
+    el.innerText = 'x = ' + Math.floor(seconds ** exp);
+	secs.innerText = Math.floor(seconds);
+	sec_rotation = 360 * seconds;
+	second.style.transform = `rotate(${sec_rotation}deg)`;
+	
+	setTimeout(function(){
+    resultsContainer.innerHTML = '<img src="chevy.jpg" alt="Chevy">';
+	},3000);
+		
+	}
+}
+
+var speedtext = '';
+
+function speed() {
+	var radseconds = seconds * Math.PI * 2;
+	v = Math.cos(radseconds) * 1.2;
+	exp = exp * v;
+	speedtext = speedtext + ' ^ ' + Math.round(v*100)/100;
+	document.getElementById("speedtext").innerHTML = speedtext;
+}
+
+var cancel = setInterval(incrementSeconds, 10);
+
+
+
+
+
+</script>
+</html>
