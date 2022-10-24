@@ -1,0 +1,717 @@
+<html>
+
+
+	
+<title>johns genius trade calc</title>
+<h1>trade generator</h1>
+<body style="background-color:gray;">
+<p>Entering data from Excel is recommended 
+<br>click <a href="calchelp.html">here</a> for help</p>
+	Replacement-Level Player Values Team 1: <br>
+	<textarea id="replacements1" rows="6" cols="32">
+qb	16
+rb	8
+wr	9
+te	7
+kicker	7
+def	8</textarea><br>
+Replacement-Level Player Values Team 2: <br>
+	<textarea id="replacements2" rows="6" cols="32">
+qb	17
+rb	9
+wr	8
+te	8
+kicker	7
+def	9</textarea>
+<br>Player 1 Team Assessment: <br>
+	<textarea id="team1" rows="15" cols="64">
+Kmurray	qb	23	22
+Thill	wr	15	16
+Mbrown	wr	11	10
+CMcCaffrey	rb	17	18
+Agibson	rb	12	11
+Mandrews	te	13	14
+Baiyuk	wr	12	11
+Emoore	wr	8	9
+Rstevenson	rb	9	8
+Kwalker	rb	6	7
+Tallgier	rb	7	6
+Smoore	wr	5	6
+Dmooney	wr	6	5
+Brobinson	rb	8	9</textarea>
+<br>Player 2 Team Assessment: <br>
+	<textarea id="team2" rows="15" cols="64">
+mkurray	qb	20	10
+htill	wr	15	14
+bmrown	wr	12	9
+mcccaffrey	rb	16	11
+gaibson	rb	15	13
+amndrews	te	13	14
+abiyuk	wr	9	11
+meoore	rb	9	9
+srtevenson	wr	11	12
+wkalker	wr	9	8
+atllgier	wr	5	5
+msoore	rb	4	7
+mdooney	rb	9	11
+rbobinson	wr	8	9</textarea>	
+<br>
+Team 1 Minimum Starter Improvement:      <input type="number" id="deltat1s" value="5"><br>
+Team 1 Minimum Overall VAR Improvement:      <input type="number" id="deltat1v" value="5"><br>	
+Team 2 Minimum Starter Improvement:      <input type="number" id="deltat2s" value="2"><br>	
+Team 2 Minimum Overall VAR Improvement:      <input type="number" id="deltat2v" value="2"><br>
+	
+  <br><button onclick="Trade()">Make me an offer!</button>
+  <br><button onclick="FastTrade()">Make me a fast offer! (only calculate up to a 3-for-3 swap)</button>
+  
+  <br>1 for 1 swap results<br>
+  <p id="results"></p>
+  <br>2 for 2 swap results<br>
+  <p id="results2"></p>
+   <br>3 for 3 swap results<br>
+  <p id="results3"></p>
+   <br>4 for 4 swap results<br>
+  <p id="results4"></p>
+  
+ <script>
+
+
+function FastTrade(){
+//get constraints (minimum starter and VAR improvement for both parties)
+var t1minstarter = parseFloat(document.getElementById("deltat1s").value);
+var t1minVAR = parseFloat(document.getElementById("deltat1v").value);
+var t2minstarter = parseFloat(document.getElementById("deltat2s").value);
+var t2minVAR = parseFloat(document.getElementById("deltat2v").value);
+//console.log(t1minVAR+t1minstarter+t2minVAR+t2minstarter);
+	
+	//get team 1 replacement values
+	var repvals1 = document.getElementById("replacements1").value;
+	var reprows1 = repvals1.split("\n");
+	var repcols1 = [];
+	for (i=0; i<6; i++){
+		repcols1[i] = reprows1[i].split(/ |\t/);
+	}
+	
+	//get team 2replacement values
+	var repvals2 = document.getElementById("replacements2").value;
+	var reprows2 = repvals2.split("\n");
+	var repcols2 = [];
+	for (i=0; i<6; i++){
+		repcols2[i] = reprows2[i].split(/ |\t/);
+	}
+
+	//get team 1 values
+	var t1values = document.getElementById("team1").value;
+	var t1rows = t1values.split("\n");
+
+	var t1cols = [];
+	for (i=0; i<t1rows.length; i++){
+		t1cols[i] = t1rows[i].split(/ |\t/);
+		for (j=0; j<6; j++){
+			if (repcols1[j][0]==t1cols[i][1]){
+				//calculate team 1s VAR according to player 1
+				t1cols[i].push(Math.max(t1cols[i][2]-repcols1[j][1],0));
+				//calculate team 1s VAR according to player 2 
+				t1cols[i].push(Math.max(t1cols[i][3]-repcols2[j][1],0));
+				}
+	}
+	}
+
+	
+	
+	//get team 2 values
+	var t2values = document.getElementById("team2").value;
+	var t2rows = t2values.split("\n");
+	var t2cols = [];
+	for (i=0; i<t2rows.length; i++){
+		t2cols[i] = t2rows[i].split(/ |\t/);
+		for (j=0; j<6; j++){
+			if (repcols1[j][0]==t2cols[i][1]){
+				//calculate team 2s VAR according to player 1
+				t2cols[i].push(Math.max(t2cols[i][2]-repcols1[j][1],0));
+				//calculate team 2s VAR according to player 2 
+				t2cols[i].push(Math.max(t2cols[i][3]-repcols2[j][1],0));
+				}
+	}
+	}
+
+var t10 = GetValues(t1cols, repcols1, 1);
+var t20 = GetValues(t2cols, repcols2, 2);
+
+//Go through swaps
+var t1starters = [];
+var t1VAR = [];
+var t2starters = [];
+var t2VAR = [];
+var tradejudgement = [];
+var tradejudgement2 = [];
+var tradejudgement3 = [];
+var tradejudgement4 = [];
+var tempplayer = [];
+var tempplayer2 = [];
+var tempplayer3 = [];
+var tempplayer4 = [];
+var tempt1 = [];
+var tempt2 = [];
+
+
+//swap player k on team 1 for player l on team 2
+for (k=0; k<t1cols.length; k++){
+	for (l=0; l<t2cols.length; l++){
+		//var k = 13;
+		//var l = 0;
+		tempt1 = t1cols.map(t1cols => t1cols.slice());
+		tempt2 = t2cols.map(t2cols => t2cols.slice());
+		tempplayer = tempt1[k];
+		tempt1[k]=tempt2[l];
+		tempt2[l]=tempplayer;
+		//console.log(tempt1[k]);
+		//console.log(tempt2[l]);
+		var t1judge = GetValues(tempt1, repcols1, 1);
+		var t2judge = GetValues(tempt2, repcols2, 2);
+		//console.log(t1judge, t2judge);
+		if ((t1judge[0]-t10[0])>=t1minstarter && (t1judge[1]-t10[1])>=t1minVAR && (t2judge[0]-t20[0])>=t2minstarter && (t2judge[1]-t20[1])>=t2minVAR){
+			//tradejudgement.push(k, l, GetValues(tempt1, repcols1, 1), GetValues(tempt2, repcols2, 2));
+			}
+		//tradejudgement.push(k, l, GetValues(tempt1, repcols1, 1), GetValues(tempt2, repcols2, 2));
+	}
+}
+
+
+
+
+//swap players n and o on team 1 for players p and q on team 2
+
+for (n=0; n<t1cols.length; n++){
+	for (o=n+1; o<t1cols.length; o++){
+		for (p=0; p<t2cols.length; p++){
+			for (q=p+1; q<t2cols.length; q++){
+				tempt1 = t1cols.map(t1cols => t1cols.slice());
+				tempt2 = t2cols.map(t2cols => t2cols.slice());
+				tempplayer = tempt1[n];
+				tempplayer2 = tempt1[o];
+				tempt1[n]=tempt2[p];
+				tempt1[o]=tempt2[q];
+				tempt2[p]=tempplayer;
+				tempt2[q]=tempplayer2;
+				//console.log(tempt1);
+				//console.log(tempt2);
+				var t1judge = GetValues(tempt1, repcols1, 1);
+				var t2judge = GetValues(tempt2, repcols2, 2);
+				if ((t1judge[0]-t10[0])>=t1minstarter && (t1judge[1]-t10[1])>=t1minVAR && (t2judge[0]-t20[0])>=t2minstarter && (t2judge[1]-t20[1])>=t2minVAR){
+					tradejudgement2.push(n, o, p, q, GetValues(tempt1, repcols1, 1), GetValues(tempt2, repcols2, 2));
+				}
+				//console.log(n,o,p,q);
+			}
+		}
+	}
+}
+
+
+//swap players r s and t on team 1 for u v and w on team 2
+for (r=0; r<t1cols.length; r++){
+	for (s=r+1; s<t1cols.length; s++){
+		for (t=s+1; t<t1cols.length; t++){
+			for (u=0; u<t2cols.length; u++){
+				for (v=u+1; v<t2cols.length; v++){
+					for (w=v+1; w<t2cols.length; w++){
+						tempt1 = t1cols.map(t1cols => t1cols.slice());
+						tempt2 = t2cols.map(t2cols => t2cols.slice());
+						tempplayer = tempt1[r];
+						tempplayer2 = tempt1[s];
+						tempplayer3 = tempt1[t];
+						tempt1[r]=tempt2[u];
+						tempt1[s]=tempt2[v];
+						tempt1[t]=tempt2[w];
+						tempt2[u]=tempplayer;
+						tempt2[v]=tempplayer2;
+						tempt2[w]=tempplayer3;
+						//console.log(tempt1);
+						//console.log(tempt2);
+						var t1judge = GetValues(tempt1, repcols1, 1);
+						var t2judge = GetValues(tempt2, repcols2, 2);
+						if ((t1judge[0]-t10[0])>=t1minstarter && (t1judge[1]-t10[1])>=t1minVAR && (t2judge[0]-t20[0])>=t2minstarter && (t2judge[1]-t20[1])>=t2minVAR){
+							tradejudgement3.push(r,s,t,u,v,w, GetValues(tempt1, repcols1, 1), GetValues(tempt2, repcols2, 2));
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+
+
+
+var resultsstring = "";
+var resultsstring2 = "";
+var resultsstring3 = "";
+var resultsstring4 = "";
+
+
+
+//list all 1 for 1 trades
+
+for (m=0; m<tradejudgement.length; m+=4){
+
+	//console.log(tradejudgement[m]);
+	resultsstring1 +=  "Team 1 should trade " + t1cols[tradejudgement[m]][0] + " for " + t2cols[tradejudgement[m+1]][0] + ".<br>This will improve their starting roster by " + (tradejudgement[m+2][0]-t10[0]) + " and their overall team value by "+ (tradejudgement[m+2][1]-t10[1]) ;
+	resultsstring1 += ". <br> Team 2 will see it as their starting roster improving by " + (tradejudgement[m+3][0]-t20[0]) + " and their overall team value improving by "+ (tradejudgement[m+3][1]-t20[1]) + "<br><br>" ;
+
+}
+
+//list all 2 for 2 trades
+for (m=0; m<tradejudgement2.length; m+=6){
+
+	
+	resultsstring2 +=  "Team 1 should trade " + t1cols[tradejudgement2[m]][0] + " and " +  t1cols[tradejudgement2[m+1]][0] + " for " + t2cols[tradejudgement2[m+2]][0] + " and " +  t2cols[tradejudgement2[m+3]][0] +  ".<br>This will improve their starting roster by " + (tradejudgement2[m+4][0]-t10[0]) + " and their overall team value by "+ (tradejudgement2[m+4][1]-t10[1]) ;
+	resultsstring2 += ". <br> Team 2 will see it as their starting roster improving by " + (tradejudgement2[m+5][0]-t20[0]) + " and their overall team value improving by "+ (tradejudgement2[m+5][1]-t20[1]) + "<br><br>" ;
+
+}
+
+//list all 3 for 3 trades
+for (m=0; m<tradejudgement3.length; m+=8){
+
+	
+	resultsstring3 +=  "Team 1 should trade " + t1cols[tradejudgement3[m]][0] + ", " + t1cols[tradejudgement3[m+1]][0] + ", and " +  t1cols[tradejudgement3[m+2]][0] + " for " + t2cols[tradejudgement3[m+3]][0] + ", " + t2cols[tradejudgement3[m+4]][0] + ", and " +  t2cols[tradejudgement3[m+5]][0] +  ".<br>This will improve their starting roster by " + (tradejudgement3[m+6][0]-t10[0]) + " and their overall team value by "+ (tradejudgement3[m+6][1]-t10[1]) ;
+	resultsstring3 += ". <br> Team 2 will see it as their starting roster improving by " + (tradejudgement3[m+7][0]-t20[0]) + " and their overall team value improving by "+ (tradejudgement3[m+7][1]-t20[1]) + "<br><br>" ;
+
+}
+
+
+
+//check if any of the trades are blank
+if(tradejudgement.length==0){
+	resultsstring="no viable 1 for 1 trades found"
+	}
+if(tradejudgement2.length==0){
+	resultsstring2="no viable 2 for 2 trades found"
+	}
+if(tradejudgement3.length==0){
+	resultsstring3="no viable 3 for 3 trades found"
+	}
+if(tradejudgement4.length==0){
+	resultsstring4="no 4 for 4 trades generated (because you clicked the 'fast' button)"
+	}	
+	
+
+document.getElementById("results").innerHTML = resultsstring
+document.getElementById("results2").innerHTML = resultsstring2
+document.getElementById("results3").innerHTML = resultsstring3
+document.getElementById("results4").innerHTML = resultsstring4
+
+}
+
+
+function Trade() {
+
+//get constraints (minimum starter and VAR improvement for both parties)
+var t1minstarter = parseFloat(document.getElementById("deltat1s").value);
+var t1minVAR = parseFloat(document.getElementById("deltat1v").value);
+var t2minstarter = parseFloat(document.getElementById("deltat2s").value);
+var t2minVAR = parseFloat(document.getElementById("deltat2v").value);
+//console.log(t1minVAR+t1minstarter+t2minVAR+t2minstarter);
+	
+	//get team 1 replacement values
+	var repvals1 = document.getElementById("replacements1").value;
+	var reprows1 = repvals1.split("\n");
+	var repcols1 = [];
+	for (i=0; i<6; i++){
+		repcols1[i] = reprows1[i].split(/ |\t/);
+	}
+	
+	//get team 2replacement values
+	var repvals2 = document.getElementById("replacements2").value;
+	var reprows2 = repvals2.split("\n");
+	var repcols2 = [];
+	for (i=0; i<6; i++){
+		repcols2[i] = reprows2[i].split(/ |\t/);
+	}
+
+	//get team 1 values
+	var t1values = document.getElementById("team1").value;
+	var t1rows = t1values.split("\n");
+
+	var t1cols = [];
+	for (i=0; i<t1rows.length; i++){
+		t1cols[i] = t1rows[i].split(/ |\t/);
+		for (j=0; j<6; j++){
+			if (repcols1[j][0]==t1cols[i][1]){
+				//calculate team 1s VAR according to player 1
+				t1cols[i].push(Math.max(t1cols[i][2]-repcols1[j][1],0));
+				//calculate team 1s VAR according to player 2 
+				t1cols[i].push(Math.max(t1cols[i][3]-repcols2[j][1],0));
+				}
+	}
+	}
+
+	
+	
+	//get team 2 values
+	var t2values = document.getElementById("team2").value;
+	var t2rows = t2values.split("\n");
+	var t2cols = [];
+	for (i=0; i<t2rows.length; i++){
+		t2cols[i] = t2rows[i].split(/ |\t/);
+		for (j=0; j<6; j++){
+			if (repcols1[j][0]==t2cols[i][1]){
+				//calculate team 2s VAR according to player 1
+				t2cols[i].push(Math.max(t2cols[i][2]-repcols1[j][1],0));
+				//calculate team 2s VAR according to player 2 
+				t2cols[i].push(Math.max(t2cols[i][3]-repcols2[j][1],0));
+				}
+	}
+	}
+
+var t10 = GetValues(t1cols, repcols1, 1);
+var t20 = GetValues(t2cols, repcols2, 2);
+
+//Go through swaps
+var t1starters = [];
+var t1VAR = [];
+var t2starters = [];
+var t2VAR = [];
+var tradejudgement = [];
+var tradejudgement2 = [];
+var tradejudgement3 = [];
+var tradejudgement4 = [];
+var tempplayer = [];
+var tempplayer2 = [];
+var tempplayer3 = [];
+var tempplayer4 = [];
+var tempt1 = [];
+var tempt2 = [];
+
+
+//swap player k on team 1 for player l on team 2
+for (k=0; k<t1cols.length; k++){
+	for (l=0; l<t2cols.length; l++){
+		//var k = 13;
+		//var l = 0;
+		tempt1 = t1cols.map(t1cols => t1cols.slice());
+		tempt2 = t2cols.map(t2cols => t2cols.slice());
+		tempplayer = tempt1[k];
+		tempt1[k]=tempt2[l];
+		tempt2[l]=tempplayer;
+		//console.log(tempt1[k]);
+		//console.log(tempt2[l]);
+		var t1judge = GetValues(tempt1, repcols1, 1);
+		var t2judge = GetValues(tempt2, repcols2, 2);
+		//console.log(t1judge, t2judge);
+		if ((t1judge[0]-t10[0])>=t1minstarter && (t1judge[1]-t10[1])>=t1minVAR && (t2judge[0]-t20[0])>=t2minstarter && (t2judge[1]-t20[1])>=t2minVAR){
+			//tradejudgement.push(k, l, GetValues(tempt1, repcols1, 1), GetValues(tempt2, repcols2, 2));
+			}
+		//tradejudgement.push(k, l, GetValues(tempt1, repcols1, 1), GetValues(tempt2, repcols2, 2));
+	}
+}
+
+
+
+
+//swap players n and o on team 1 for players p and q on team 2
+
+for (n=0; n<t1cols.length; n++){
+	for (o=n+1; o<t1cols.length; o++){
+		for (p=0; p<t2cols.length; p++){
+			for (q=p+1; q<t2cols.length; q++){
+				tempt1 = t1cols.map(t1cols => t1cols.slice());
+				tempt2 = t2cols.map(t2cols => t2cols.slice());
+				tempplayer = tempt1[n];
+				tempplayer2 = tempt1[o];
+				tempt1[n]=tempt2[p];
+				tempt1[o]=tempt2[q];
+				tempt2[p]=tempplayer;
+				tempt2[q]=tempplayer2;
+				//console.log(tempt1);
+				//console.log(tempt2);
+				var t1judge = GetValues(tempt1, repcols1, 1);
+				var t2judge = GetValues(tempt2, repcols2, 2);
+				if ((t1judge[0]-t10[0])>=t1minstarter && (t1judge[1]-t10[1])>=t1minVAR && (t2judge[0]-t20[0])>=t2minstarter && (t2judge[1]-t20[1])>=t2minVAR){
+					tradejudgement2.push(n, o, p, q, GetValues(tempt1, repcols1, 1), GetValues(tempt2, repcols2, 2));
+				}
+				//console.log(n,o,p,q);
+			}
+		}
+	}
+}
+
+
+//swap players r s and t on team 1 for u v and w on team 2
+for (r=0; r<t1cols.length; r++){
+	for (s=r+1; s<t1cols.length; s++){
+		for (t=s+1; t<t1cols.length; t++){
+			for (u=0; u<t2cols.length; u++){
+				for (v=u+1; v<t2cols.length; v++){
+					for (w=v+1; w<t2cols.length; w++){
+						tempt1 = t1cols.map(t1cols => t1cols.slice());
+						tempt2 = t2cols.map(t2cols => t2cols.slice());
+						tempplayer = tempt1[r];
+						tempplayer2 = tempt1[s];
+						tempplayer3 = tempt1[t];
+						tempt1[r]=tempt2[u];
+						tempt1[s]=tempt2[v];
+						tempt1[t]=tempt2[w];
+						tempt2[u]=tempplayer;
+						tempt2[v]=tempplayer2;
+						tempt2[w]=tempplayer3;
+						//console.log(tempt1);
+						//console.log(tempt2);
+						var t1judge = GetValues(tempt1, repcols1, 1);
+						var t2judge = GetValues(tempt2, repcols2, 2);
+						if ((t1judge[0]-t10[0])>=t1minstarter && (t1judge[1]-t10[1])>=t1minVAR && (t2judge[0]-t20[0])>=t2minstarter && (t2judge[1]-t20[1])>=t2minVAR){
+							tradejudgement3.push(r,s,t,u,v,w, GetValues(tempt1, repcols1, 1), GetValues(tempt2, repcols2, 2));
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+//swap players x y z and aa on team 1 for ab ac ad and ae on team 2
+for (x=0; x<t1cols.length; x++){
+for (y=x+1; y<t1cols.length; y++){
+	for (z=y+1; z<t1cols.length; z++){
+		for (aa=z+1; aa<t1cols.length; aa++){
+			for (ab=0; ab<t2cols.length; ab++){
+			for (ac=ab+1; ac<t2cols.length; ac++){
+				for (ad=ac+1; ad<t2cols.length; ad++){
+					for (ae=ad+1; ae<t2cols.length; ae++){
+						tempt1 = t1cols.map(t1cols => t1cols.slice());
+						tempt2 = t2cols.map(t2cols => t2cols.slice());
+						tempplayer = tempt1[x];
+						tempplayer2 = tempt1[y];
+						tempplayer3 = tempt1[z];
+						tempplayer4 = tempt1[aa];
+						tempt1[x]=tempt2[ab];
+						tempt1[y]=tempt2[ac];
+						tempt1[z]=tempt2[ad];
+						tempt1[aa]=tempt2[ae];
+						tempt2[ab]=tempplayer;
+						tempt2[ac]=tempplayer2;
+						tempt2[ad]=tempplayer3;
+						tempt2[ae]=tempplayer4;
+						//console.log(tempt1);
+						//console.log(tempt2);
+						var t1judge = GetValues(tempt1, repcols1, 1);
+						var t2judge = GetValues(tempt2, repcols2, 2);
+						if ((t1judge[0]-t10[0])>=t1minstarter && (t1judge[1]-t10[1])>=t1minVAR && (t2judge[0]-t20[0])>=t2minstarter && (t2judge[1]-t20[1])>=t2minVAR){
+							tradejudgement4.push(x,y,z,aa,ab,ac,ad,ae, GetValues(tempt1, repcols1, 1), GetValues(tempt2, repcols2, 2));
+						}
+					}
+				}
+			}
+			}
+		}
+	}
+}
+}
+
+
+var resultsstring = "";
+var resultsstring2 = "";
+var resultsstring3 = "";
+var resultsstring4 = "";
+
+
+
+//list all 1 for 1 trades
+
+for (m=0; m<tradejudgement.length; m+=4){
+
+	//console.log(tradejudgement[m]);
+	resultsstring1 +=  "Team 1 should trade " + t1cols[tradejudgement[m]][0] + " for " + t2cols[tradejudgement[m+1]][0] + ".<br>This will improve their starting roster by " + (tradejudgement[m+2][0]-t10[0]) + " and their overall team value by "+ (tradejudgement[m+2][1]-t10[1]) ;
+	resultsstring1 += ". <br> Team 2 will see it as their starting roster improving by " + (tradejudgement[m+3][0]-t20[0]) + " and their overall team value improving by "+ (tradejudgement[m+3][1]-t20[1]) + "<br><br>" ;
+
+}
+
+//list all 2 for 2 trades
+for (m=0; m<tradejudgement2.length; m+=6){
+
+	
+	resultsstring2 +=  "Team 1 should trade " + t1cols[tradejudgement2[m]][0] + " and " +  t1cols[tradejudgement2[m+1]][0] + " for " + t2cols[tradejudgement2[m+2]][0] + " and " +  t2cols[tradejudgement2[m+3]][0] +  ".<br>This will improve their starting roster by " + (tradejudgement2[m+4][0]-t10[0]) + " and their overall team value by "+ (tradejudgement2[m+4][1]-t10[1]) ;
+	resultsstring2 += ". <br> Team 2 will see it as their starting roster improving by " + (tradejudgement2[m+5][0]-t20[0]) + " and their overall team value improving by "+ (tradejudgement2[m+5][1]-t20[1]) + "<br><br>" ;
+
+}
+
+//list all 3 for 3 trades
+for (m=0; m<tradejudgement3.length; m+=8){
+
+	
+	resultsstring3 +=  "Team 1 should trade " + t1cols[tradejudgement3[m]][0] + ", " + t1cols[tradejudgement3[m+1]][0] + ", and " +  t1cols[tradejudgement3[m+2]][0] + " for " + t2cols[tradejudgement3[m+3]][0] + ", " + t2cols[tradejudgement3[m+4]][0] + ", and " +  t2cols[tradejudgement3[m+5]][0] +  ".<br>This will improve their starting roster by " + (tradejudgement3[m+6][0]-t10[0]) + " and their overall team value by "+ (tradejudgement3[m+6][1]-t10[1]) ;
+	resultsstring3 += ". <br> Team 2 will see it as their starting roster improving by " + (tradejudgement3[m+7][0]-t20[0]) + " and their overall team value improving by "+ (tradejudgement3[m+7][1]-t20[1]) + "<br><br>" ;
+
+}
+
+//list all 4 for 4 trades
+for (m=0; m<tradejudgement4.length; m+=10){
+
+	
+	resultsstring4 +=  "Team 1 should trade " + t1cols[tradejudgement4[m]][0] + ", " + t1cols[tradejudgement4[m+1]][0] + ", " + t1cols[tradejudgement4[m+2]][0] + ", and " +  t1cols[tradejudgement4[m+3]][0] + " for " + t2cols[tradejudgement4[m+4]][0] + ", " + t2cols[tradejudgement4[m+5]][0] + ", " + t2cols[tradejudgement4[m+6]][0] + ", and " +  t2cols[tradejudgement4[m+7]][0] +  ".<br>This will improve their starting roster by " + (tradejudgement4[m+8][0]-t10[0]) + " and their overall team value by "+ (tradejudgement4[m+8][1]-t10[1]) ;
+	resultsstring4 += ". <br> Team 2 will see it as their starting roster improving by " + (tradejudgement4[m+9][0]-t20[0]) + " and their overall team value improving by "+ (tradejudgement4[m+9][1]-t20[1]) + "<br><br>" ;
+
+}
+
+//check if any of the trades are blank
+if(tradejudgement.length==0){
+	resultsstring="no viable 1 for 1 trades found"
+	}
+if(tradejudgement2.length==0){
+	resultsstring2="no viable 2 for 2 trades found"
+	}
+if(tradejudgement3.length==0){
+	resultsstring3="no viable 3 for 3 trades found"
+	}
+if(tradejudgement4.length==0){
+	resultsstring4="no viable 4 for 4 trades found"
+	}	
+	
+
+document.getElementById("results").innerHTML = resultsstring
+document.getElementById("results2").innerHTML = resultsstring2
+document.getElementById("results3").innerHTML = resultsstring3
+document.getElementById("results4").innerHTML = resultsstring4
+
+}
+
+
+
+function GetValues(team, replacementlevels, player){
+	var qb = replacementlevels[0][1];
+	var wr1 = replacementlevels[2][1];
+	var wr2 = replacementlevels[2][1];
+	var rb1 = replacementlevels[1][1];
+	var rb2 = replacementlevels[1][1];
+	var te = replacementlevels[3][1];
+	var flex = Math.max(wr1,rb1,te);
+	var kicker = replacementlevels[4][1];
+	var def = replacementlevels[5][1];
+	var starternames = ["replacementqb","replacementwr1","replacementwr2","replacementrb1","replacementrb2","replacementte","replacementflex","replacementkicker","replacementdef",];
+	var totalVAR = 0;
+	var playerchanged = 0;
+	var laps = 0;
+	
+	for (i=0; i<team.length; i++){
+		playerchanged = 0;
+		laps++;
+		if(team[i][1] == "qb" && team[i][1 + player] > qb){
+		//console.log(laps, i, "qb", team[i][3 + player], team[i][0]);
+			qb = team[i][1 + player];
+			starternames[0] = team[i][0];
+			//player 1 uses index 4, player 2 uses index 5
+			totalVAR+=team[i][3 + player];
+			i++;
+			playerchanged = 1;
+		}
+		if(i==team.length){break;}
+		if(team[i][1] == "wr" && parseFloat(team[i][1 + player]) > wr1){
+		//console.log(laps, i, "WR1", team[i][3 + player], team[i][0]);
+			
+			//gotta demote the previous wr1 first
+			wr2 = wr1;
+			starternames[2] = starternames[1];
+			//now promote new guy
+			wr1 = team[i][1 + player];
+			starternames[1] = team[i][0];
+			totalVAR+=team[i][3 + player];
+			i++;
+			playerchanged = 1;
+		}
+		if(i==team.length){break;}
+		if(team[i][1] == "wr" && parseFloat(team[i][1 + player]) > wr2){
+		//console.log(laps, i, "WR2", team[i][3 + player], team[i][0]);
+			//gotta demote the previous wr2 first
+			if(wr2>flex){
+				flex = wr2;
+				starternames[6] = starternames[2];
+			}
+			//now promote new guy
+			wr2 = team[i][1 + player];
+			starternames[2] = team[i][0];
+			totalVAR+=team[i][3 + player];
+			i++;
+			playerchanged = 1;
+		}
+		if(i==team.length){break;}
+		if(team[i][1] == "rb" && parseFloat(team[i][1 + player]) > rb1){
+		//console.log(laps, i, "RB1", team[i][3 + player], team[i][0]);
+			rb2 = rb1;
+			starternames[4] = starternames[3];
+			//promote new guy
+			rb1 = team[i][1 + player];
+			starternames[3] = team[i][0];
+			totalVAR+=team[i][3 + player];
+			i++;
+			playerchanged = 1;
+		}
+		if(i==team.length){break;}
+		if(team[i][1] == "rb" && parseFloat(team[i][1 + player]) > rb2){
+		//console.log(laps, i, "RB2", team[i][3 + player], team[i][0]);
+			if(rb2>flex){
+				flex = rb2;
+				starternames[6] = starternames[4];
+			}
+			//promote new guy
+			rb2 = team[i][1 + player];
+			starternames[4] = team[i][0];
+			totalVAR+=team[i][3 + player];
+			i++;
+			playerchanged = 1;
+		}
+		if(i==team.length){break;}
+		if(team[i][1] == "te" && parseFloat(team[i][1 + player]) > te){
+		//console.log(laps, i, "TE", team[i][3 + player], team[i][0]);
+			if(te>flex){
+				flex = te;
+				starternames[6] = starternames[5];
+			}
+			te = team[i][1 + player];
+			starternames[5] = team[i][0];
+			totalVAR+=team[i][3 + player];
+			i++;
+			playerchanged = 1;
+		}
+		if(i==team.length){break;}
+		if((team[i][1] == "wr" || team[i][1] == "rb" || team[i][1] == "te") && parseFloat(team[i][1 + player]) > flex){
+		//console.log(laps, i, "FLEX", team[i][3 + player], team[i][0]);
+			flex = team[i][1 + player];
+			starternames[6] = team[i][0];
+			totalVAR+=team[i][3 + player];
+			i++;
+			playerchanged = 1;
+		}
+		if(i==team.length){break;}
+		if(team[i][1] == "kicker" && parseFloat(team[i][2]) > kicker){
+		//console.log(laps, i, "kicker", team[i][3 + player], team[i][0]);
+			kicker = team[i][2];
+			starternames[7] = team[i][0];
+			totalVAR+=team[i][3 + player];
+			i++;
+			playerchanged = 1;
+		}
+		if(i==team.length){break;}
+		if(team[i][1] == "def" && parseFloat(team[i][2]) > def){
+		//console.log(laps, i, "DEF", team[i][3 + player], team[i][0]);
+			def = team[i][2];
+			starternames[8] = team[i][0];
+			totalVAR+=team[i][3 + player];
+			i++;
+			playerchanged = 1;
+		}
+		if(i==team.length){break;}
+		//console.log(laps, i, "nonstarter", team[i][3 + player], team[i][0]);
+		totalVAR+=team[i][3 + player];
+	
+	}
+	var starters = parseFloat(qb) + parseFloat(wr1) + parseFloat(wr2) + parseFloat(rb1) + parseFloat(rb2) + parseFloat(te) + parseFloat(flex) + parseFloat(kicker) + parseFloat(def);
+	//console.log(starternames);
+	//console.log(qb, wr1, wr2, rb1, rb2, te, flex, kicker, def);
+	var startandVAR = [starters, totalVAR];
+	return startandVAR;
+	}
+
+
+  </script>
+
+
+</html>

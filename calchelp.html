@@ -1,0 +1,36 @@
+<html>
+<title>johns genius trade calc help</title>
+<h1>trade generator instructions</h1>
+<body style="background-color:gray;">
+
+<b>Replacement Values</b><br>
+<p>In Excel, make a table with two columns and 7 rows (including headers). 
+The first column will have all the positions. If you use a different term for a position (e.g. "k" instead of "kicker"*), the program won't work.
+These are the replacement values for each position- used to calculate a player's Value Above Replacement (VAR) and also to set values for a starting lineup in the event that a trade leaves you without a starting player 
+(i.e. if you trade away your quarterback and don't have another on your roster, the program will assume that you start a replacement-level qb). You need separate tables for each team, in case one of them has different ideas about free agent value.<br>
+*I used "kicker" instead of "k" because I was troubleshooting something where "k" was used as a variable and I was afraid that somehow this was messing with it. Sue me.  </p>
+
+ <body>
+      <img src="repvalues.png" alt="replacement values" width="350" height="150">
+	  <br>Once you make both tables, copy the yellow area and paste it into the "replacement values" field. Don't copy the headers. 
+   </body>
+<br><br>
+<b>Team Assessments</b><br>
+<p>In Excel, make a table with 4 columns and 1 row for every player, in addition to a header.
+The first column has the player's name, with NO SPACES. Spaces will throw things off, so just use their last name or first initial+last name or whatever. The second column is their position- use the same naming convention as used for the replacement values.
+The next two columns are both team's evaluations of each player. So, if you think player A is worth 20 points a game, and your trading partner thinks that they're worth 23 points a game, then you would put "20" in column 3 and "23" in column 4. 
+Guessing is fine, the intention here is to have an estimate for the difference in valuations between teams, giving you the opportunity for some arbitrage. For team 2, you are still putting player 1's evaluations in column 3 and player 2's in column 4. 
+Don't worry about it if the columns look askew on the website- as long as there wasn't any extra spaces in the excel document, it should work fine.
+</p>
+ <body>
+      <img src="teameval.png" alt="team evaluation" width="700" height="300">
+	  <br>Once you make both tables, copy the yellow area and paste it into the "team evaluation" field. Don't copy the headers.
+   </body>
+<br><br>
+<b>Improvement Values</b><br>
+<p>These are the constraints for the trade. We are looking at total points for the starters, and VAR for the entire team.
+In theory you should want your values to be as high as possible (while still generating trades), and your opponents to be anything above zero. However sometimes there is variance in what can be accepted or what is needed, so full customization was provided.
+If the amount of trades provided is overwhelming, increasing the minimum starter increase or VAR will narrow the field.
+</p>
+
+</html>
