@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+* {
+  box-sizing: border-box;
+}
+
+/* Add a gray background color with some padding */
+body {
+  font-family: Arial;
+  padding: 20px;
+  background: #f1f1f1;
+}
+
+/* Header/Blog Title */
+.header {
+  padding: 30px;
+  font-size: 40px;
+  text-align: center;
+  background: white;
+}
+
+/* Create two unequal columns that floats next to each other */
+/* Left column */
+.leftcolumn {   
+  float: left;
+  width: 75%;
+}
+
+/* Right column */
+.rightcolumn {
+  float: left;
+  width: 25%;
+  padding-left: 20px;
+}
+
+/* Fake image */
+.fakeimg {
+  background-color: #aaa;
+  width: 100%;
+  padding: 20px;
+}
+
+/* Add a card effect for articles */
+.card {
+   background-color: white;
+   padding: 20px;
+   margin-top: 20px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Footer */
+.footer {
+  padding: 20px;
+  text-align: center;
+  background: #ddd;
+  margin-top: 20px;
+}
+
+/* Responsive layout - when the screen is less than 800px wide, make the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 800px) {
+  .leftcolumn, .rightcolumn {   
+    width: 100%;
+    padding: 0;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h2>thefacebook.com</h2>
+</div>
+
+<div class="row">
+  <div class="leftcolumn">
+    <div class="card">
+      <h2>The 2nd Decennial John-Dylan Book Recommendation List </h2>
+      <h5>Five (5) Books for (4) You (Dylan), Sep 3, 2023</h5>
+      <img src="GWB.png">
+      <p>Well, it's that time of the decade again. 
+	Ten years have passed, which means Dylan has finished reading the five books I recommended him in 2013 and is ready for a new stack to keep him company through 2033. 
+	Lucky for him, I've read ten books in the same time frame, so I can choose the five best from those and save him ten years. 
+	Now , in no particular order, let's dive into these long-brewing recs.</p>
+	<h3>House of Leaves - Mark Z. Danielewski</h3>
+	<p>This was the coolest fiction book I've read lately and a real testament to its authors brilliance.
+	He even insisted on type-setting this himself, which shows his devotion to his vision. 
+	He worked on it for ten years and in that time weaved countless references and layers into this chronology
+	of a house that's larger on the inside than the outside.</p>
+	<h3>Atomic Habits - James Clear</h3>
+	<p>
+	The past year I've done a lot of management reading and, looking back, this book stands out as the best at spurring self-reflection.
+	When I read self-management books I'm often left wondering if I should be directing my energy elsewhere.
+	Like, I don't need to read a book to know some things I should be doing differently. 
+	But the value of this book is that it's such an easy read that you really won't feel like you're using up any energy on it.
+	As far as the actual science goes, you can probably get a better understanding through Charles Duhigg's "The Power of Habit",
+	but, to my earlier point, stripping out the details for most is an advantage.
+	This gives you a solid foundation that should lead to at least one area of your life being improved. 
+	Bonus: This book took corporate America by storm last Christmas so there's a good chance your boss will want to discuss it (if you're so inclined).</p>
+	<h3>Flow - Mihaly Csikszentmihalyi</h3>
+	<p>The reason I was interested in management books was that I felt I needed to do a much better job managing myself.
+	Also, I figured that solving how to motivate myself would help with motivating others, if that's ever necessary or valuable.
+	I think this book really gets you close to the truth of motivation and understanding the self.
+	A common criticism would be that the author bites off more than he can chew, which is fair, but the overall framework he provides is still much accurate than most people's default assumption.
+	In general, if you're interested in pyschology you should get a lot out of this.</p>
+	<h3>John Adams - David McCullough</h3>
+	<p>Probably the most relatable historical figure I've come across, and with enough primary sources that it doesn't feel like wishful thinking saying that.
+	Adams' challenges with work, love, and especially friendship are timeless and will have even the staunchest Monarchist celebrating his victories.</p>
+	<h3>The Fountainhead - Ayn Rand</h3>
+	<p>Ayn Rand gets discussed a lot as a political writer, but I find this book to be more of a Romantic experiment.
+	What if you took everything you found beautiful about love and labor and separated them from what you found ugly?
+	There's great dystopian worlbuilding (which I'm a sucker for), the characters are compelling, and there's some real poetry to be found in the dialogue. </p>
+	
+	
+    </div>
+  </div>
+  
+<div class="rightcolumn">
+    <div class="card">
+      <h2>About Me</h2>
+      <img src="AboutMe.png">
+      <p><b>Steve Rogers</b>: <i>Big man in a suit of armour. Take that off, what are you?</i> 
+	<br><b>Tony Stark</b>: <i>Genius, billionaire, playboy, philanthropist.</i>
+	</p>
+    </div>
+    <div class="card">
+      <h3>Popular Posts</h3>
+      <div class="fakeimg">Goebbel's Selfless Sacrifice</div><br>
+      <div class="fakeimg">Three Things Botanists can Learn from Vladimir Lenin</div><br>
+      <div class="fakeimg">Thinking About Liberating the Cambodian Worker? Think Again.</div>
+    </div>
+    <div class="card">
+      <h3>Follow Me</h3>
+      <p>https://twitter.com/billmaher</p>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <h2>Tune in next week for my breakdown of Boston's top Ska bands!</h2>
+</div>
+
+</body>
+</html>
